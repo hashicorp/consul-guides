@@ -1,0 +1,1 @@
+name = "consul-aws-simple"
