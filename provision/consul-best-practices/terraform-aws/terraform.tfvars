@@ -1,5 +1,5 @@
 # General
-name = "consul-aws-advanced"
+name = "consul-best-practices"
 
 # Network module
 vpc_cidr                = "172.19.0.0/16"

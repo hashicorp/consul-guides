@@ -1,1 +1,1 @@
-name = "consul-aws-simple"
+name = "consul-quick-start"

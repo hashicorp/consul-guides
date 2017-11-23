@@ -11,10 +11,11 @@ module "consul_auto_join_instance_role" {
 }
 
 data "template_file" "bastion_user_data" {
-  template = "${file("${path.module}/../templates/bastion-init-systemd.sh.tpl")}"
+  template = "${file("${path.module}/../../templates/bastion-init-systemd.sh.tpl")}"
 
   vars = {
-    name = "${var.name}"
+    name     = "${var.name}"
+    provider = "aws"
   }
 }
 
@@ -40,16 +41,17 @@ module "network_aws" {
 }
 
 data "template_file" "consul_user_data" {
-  template = "${file("${path.module}/../templates/consul-init-systemd.sh.tpl")}"
+  template = "${file("${path.module}/../../templates/consul-init-systemd.sh.tpl")}"
 
   vars = {
     name             = "${var.name}"
     bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
+    provider         = "aws"
   }
 }
 
 module "consul_aws" {
-  source = "git@github.com:hashicorp-modules/network-aws.git?ref=f-refactor"
+  source = "git@github.com:hashicorp-modules/consul-aws.git?ref=f-refactor"
 
   name             = "${var.name}" # Must match network_aws module name for Consul Auto Join to work
   vpc_id           = "${module.network_aws.vpc_id}"

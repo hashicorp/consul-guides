@@ -1,7 +1,13 @@
-name              = "consul-aws-dev"
+name              = "consul-dev"
 vpc_cidrs_public  = ["10.139.1.0/24",]
 vpc_cidrs_private = ["10.139.11.0/24",]
 nat_count         = "1"
 bastion_count     = "0"
 consul_public_ip  = "true"
 consul_count      = "1"
+# os                = "Ubuntu" # OS type, defaults to RHEL
+# ami_owner         = "099720109477" # Base image owner, defaults to RHEL
+# ami_name          = "*ubuntu-xenial-16.04-amd64-server-*" # Base image name, defaults to RHEL
+# version           = "1.0.1" Consul Version, defaults to 1.0.1
+# url               = "" Consul Enterprise download URL, defaults to Consul OSS
+# image_id          = "" AMI ID override, defaults to base RHEL
