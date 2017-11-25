@@ -10,12 +10,33 @@ module "consul_auto_join_instance_role" {
   name = "${var.name}"
 }
 
+resource "random_id" "serf_encrypt" {
+  byte_length = 16
+}
+
+module "consul_tls_self_signed_cert" {
+  source = "git@github.com:hashicorp-modules/tls-self-signed-cert.git?ref=f-refactor"
+
+  name                  = "${var.name}-consul"
+  validity_period_hours = "24"
+  ca_common_name        = "hashicorp.com"
+  organization_name     = "HashiCorp Inc."
+  common_name           = "hashicorp.com"
+  dns_names             = ["*.node.consul", "*.service.consul"]
+  ip_addresses          = ["0.0.0.0", "127.0.0.1"]
+}
+
 data "template_file" "bastion_user_data" {
-  template = "${file("${path.module}/../../templates/bastion-init-systemd.sh.tpl")}"
+  template = "${file("${path.module}/../../templates/best-practices-bastion-systemd.sh.tpl")}"
 
   vars = {
-    name     = "${var.name}"
-    provider = "aws"
+    name           = "${var.name}"
+    provider       = "${var.provider}"
+    local_ip_url   = "${var.local_ip_url}"
+    serf_encrypt   = "${random_id.serf_encrypt.b64_std}"
+    consul_crt_pem = "${module.consul_tls_self_signed_cert.leaf_pem}"
+    consul_key_pem = "${module.consul_tls_private_key.private_key_pem}"
+    vault_crt_pem  = "${module.vault_tls_self_signed_cert.leaf_pem}"
   }
 }
 
@@ -41,12 +62,16 @@ module "network_aws" {
 }
 
 data "template_file" "consul_user_data" {
-  template = "${file("${path.module}/../../templates/consul-init-systemd.sh.tpl")}"
+  template = "${file("${path.module}/../../templates/best-practices-consul-systemd.sh.tpl")}"
 
   vars = {
     name             = "${var.name}"
+    provider         = "${var.provider}"
+    local_ip_url     = "${var.local_ip_url}"
     bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
-    provider         = "aws"
+    serf_encrypt     = "${random_id.serf_encrypt.b64_std}"
+    consul_crt_pem   = "${module.consul_tls_self_signed_cert.leaf_pem}"
+    consul_key_pem   = "${module.consul_tls_private_key.private_key_pem}"
   }
 }
 

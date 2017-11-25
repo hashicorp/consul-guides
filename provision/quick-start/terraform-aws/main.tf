@@ -1,9 +1,39 @@
-data "template_file" "bastion_user_data" {
-  template = "${file("${path.module}/../../templates/bastion-init-systemd.sh.tpl")}"
+data "aws_ami" "base" {
+  most_recent = true
+  owners      = ["${var.ami_owner}"]
+
+  filter {
+    name   = "name"
+    values = ["${var.ami_name}"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+data "template_file" "consul_install" {
+  template = "${file("${path.module}/../../templates/install-consul-systemd.sh.tpl")}"
 
   vars = {
-    name     = "${var.name}"
-    provider = "aws"
+    consul_version = "${var.consul_version}"
+    consul_url     = "${var.consul_url}"
+  }
+}
+
+data "template_file" "bastion_quick_start" {
+  template = "${file("${path.module}/../../templates/quick-start-bastion-systemd.sh.tpl")}"
+
+  vars = {
+    name         = "${var.name}"
+    provider     = "${var.provider}"
+    local_ip_url = "${var.local_ip_url}"
   }
 }
 
@@ -13,16 +43,21 @@ module "network_aws" {
   name          = "${var.name}"
   nat_count     = "1"
   bastion_count = "1"
-  user_data     = "${data.template_file.bastion_user_data.rendered}" # Override user_data
+  image_id      = "${data.aws_ami.base.id}"
+  user_data     = <<EOF
+${data.template_file.consul_install.rendered}
+${data.template_file.bastion_quick_start.rendered}
+EOF
 }
 
-data "template_file" "consul_user_data" {
-  template = "${file("${path.module}/../../templates/consul-init-systemd.sh.tpl")}"
+data "template_file" "consul_quick_start" {
+  template = "${file("${path.module}/../../templates/quick-start-consul-systemd.sh.tpl")}"
 
   vars = {
     name             = "${var.name}"
+    provider         = "${var.provider}"
+    local_ip_url     = "${var.local_ip_url}"
     bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
-    provider         = "aws"
   }
 }
 
@@ -33,6 +68,10 @@ module "consul_aws" {
   vpc_id       = "${module.network_aws.vpc_id}"
   vpc_cidr     = "${module.network_aws.vpc_cidr_block}"
   subnet_ids   = "${module.network_aws.subnet_private_ids}"
-  user_data    = "${data.template_file.consul_user_data.rendered}" # Custom user_data
+  image_id     = "${var.consul_image_id != "" ? var.consul_image_id : data.aws_ami.base.id}"
   ssh_key_name = "${module.network_aws.ssh_key_name}"
+  user_data    = <<EOF
+${data.template_file.consul_install.rendered} # Runtime install Consul in -dev mode
+${data.template_file.consul_quick_start.rendered} # Configure Consul quick start
+EOF
 }

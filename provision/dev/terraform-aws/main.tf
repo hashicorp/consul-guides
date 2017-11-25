@@ -33,16 +33,12 @@ data "aws_ami" "base" {
   }
 }
 
-data "template_file" "consul_install_user_data" {
-  template = "${file("${path.module}/../../templates/consul-install-systemd.sh.tpl")}"
+data "template_file" "consul_user_data" {
+  template = "${file("${path.module}/../../templates/install-consul-systemd.sh.tpl")}"
 
   vars = {
-    group   = "${var.group}"
-    user    = "${var.user}"
-    comment = "${var.comment}"
-    home    = "${var.home}"
-    version = "${var.version}"
-    url     = "${var.url}"
+    consul_version = "${var.consul_version}"
+    consul_url     = "${var.consul_url}"
   }
 }
 
@@ -56,7 +52,7 @@ module "consul_aws" {
   os           = "${var.os}"
   public_ip    = "${var.consul_public_ip}"
   count        = "${var.consul_count}"
-  image_id     = "${var.image_id != "" ? var.image_id : data.aws_ami.base.id}"
-  user_data    = "${data.template_file.consul_install_user_data.rendered}" # Custom user_data
+  image_id     = "${var.consul_image_id != "" ? var.consul_image_id : data.aws_ami.base.id}"
+  user_data    = "${data.template_file.consul_user_data.rendered}" # Custom user_data
   ssh_key_name = "${module.ssh_keypair_aws.name}"
 }
