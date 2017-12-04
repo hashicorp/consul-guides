@@ -34,9 +34,9 @@ data "template_file" "bastion_user_data" {
     provider       = "${var.provider}"
     local_ip_url   = "${var.local_ip_url}"
     serf_encrypt   = "${random_id.serf_encrypt.b64_std}"
-    consul_crt_pem = "${module.consul_tls_self_signed_cert.leaf_pem}"
-    consul_key_pem = "${module.consul_tls_private_key.private_key_pem}"
-    vault_crt_pem  = "${module.vault_tls_self_signed_cert.leaf_pem}"
+    consul_ca_pem  = "${module.consul_tls_self_signed_cert.ca_public_key_pem}"
+    consul_crt_pem = "${module.consul_tls_self_signed_cert.leaf_cert_pem}"
+    consul_key_pem = "${module.consul_tls_self_signed_cert.leaf_private_key_pem}"
   }
 }
 
@@ -50,8 +50,6 @@ module "network_aws" {
   vpc_cidrs_private = "${var.vpc_cidrs_private}"
   release_version   = "${var.bastion_release_version}"
   consul_version    = "${var.bastion_consul_version}"
-  vault_version     = "${var.bastion_vault_version}"
-  nomad_version     = "${var.bastion_nomad_version}"
   os                = "${var.bastion_os}"
   os_version        = "${var.bastion_os_version}"
   bastion_count     = "${var.bastion_count}"
@@ -70,8 +68,9 @@ data "template_file" "consul_user_data" {
     local_ip_url     = "${var.local_ip_url}"
     bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
     serf_encrypt     = "${random_id.serf_encrypt.b64_std}"
-    consul_crt_pem   = "${module.consul_tls_self_signed_cert.leaf_pem}"
-    consul_key_pem   = "${module.consul_tls_private_key.private_key_pem}"
+    consul_ca_pem    = "${module.consul_tls_self_signed_cert.ca_public_key_pem}"
+    consul_crt_pem   = "${module.consul_tls_self_signed_cert.leaf_cert_pem}"
+    consul_key_pem   = "${module.consul_tls_self_signed_cert.leaf_private_key_pem}"
   }
 }
 

@@ -16,7 +16,7 @@ sudo update-ca-trust force-enable
 # TODO: Remove
 echo "Configure Consul TLS certificate in /etc/pki/ca-trust/source/anchors/consul.crt"
 cat <<EOF | sudo tee /etc/pki/ca-trust/source/anchors/consul.crt
-${consul_crt_pem}
+${consul_ca_pem}
 EOF
 
 echo "Configure Consul TLS certificate in /etc/pki/tls/certs/consul.crt"
@@ -32,7 +32,7 @@ echo "Configure Consul TLS certificate in /etc/pki/tls/certs/ca-bundle.crt"
 cat <<EOF | sudo tee -a /etc/pki/tls/certs/ca-bundle.crt
 
 # Consul
-${consul_crt_pem}
+${consul_ca_pem}
 EOF
 
 # TODO: Remove
@@ -40,7 +40,7 @@ echo "Configure Consul TLS certificate in /etc/ssl/certs/ca-bundle.crt"
 cat <<EOF | sudo tee -a /etc/ssl/certs/ca-bundle.crt
 
 # Consul
-${consul_crt_pem}
+${consul_ca_pem}
 EOF
 
 echo "Update CA trust"
