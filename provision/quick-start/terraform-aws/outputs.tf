@@ -2,17 +2,17 @@ output "zREADME" {
   value = <<README
 Your AWS Consul cluster has been successfully provisioned!
 
-A private RSA key named "${module.network_aws.private_key_filename}" has been generated and downloaded locally. The file permissions have been changed to 0600 so the key can be used immediately for SSH or scp.
+A private RSA key has been generated and downloaded locally. The file permissions have been changed to 0600 so the key can be used immediately for SSH or scp.
 
 Run the below command to add this private key to the list maintained by ssh-agent so you're not prompted for it when using SSH or scp to connect to hosts with your public key.
 
-  ssh-add ${module.network_aws.private_key_filename}
+  ${join("\n  ", formatlist("ssh-add %s", split(",", module.network_aws.private_key_filename)))}
 
 The public part of the key loaded into the agent ("public_key_openssh" output) has been placed on the target system in ~/.ssh/authorized_keys.
 
 To SSH into a Bastion host using this private key, run one of the below commands.
 
-  ${join("\n  ", formatlist("ssh -A -i %s %s@%s", module.network_aws.private_key_filename, module.network_aws.bastion_username, module.network_aws.bastion_ips_public))}
+  ${join("\n  ", formatlist("ssh -A -i %s %s@%s", split(",", module.network_aws.private_key_filename), module.network_aws.bastion_username, module.network_aws.bastion_ips_public))}
 
 To force the generation of a new key, the private key instance can be "tainted" using the below command.
 

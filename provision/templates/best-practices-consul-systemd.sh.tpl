@@ -71,8 +71,8 @@ cat <<CONFIG >/etc/consul.d/consul-server.json
   "bootstrap_expect": ${bootstrap_expect},
   "leave_on_terminate": true,
   "retry_join": ["provider=${provider} tag_key=Consul-Auto-Join tag_value=${name}"],
-  "encrypt": "${serf_encrypt_key}",
-  "key_file": "/etc/pki/tls/private/consul.crt",
+  "encrypt": "${serf_encrypt}",
+  "key_file": "/etc/pki/tls/private/consul.key",
   "cert_file": "/etc/pki/tls/certs/consul.crt",
   "ca_file": "/etc/pki/tls/certs/ca-bundle.crt",
   "ports": { "https": 8080 }
