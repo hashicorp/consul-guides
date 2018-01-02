@@ -59,7 +59,7 @@ ${consul_key_pem}
 EOF
 
 echo "Configure Bastion Consul client"
-cat <<CONFIG >/etc/consul.d/consul-client.json
+cat <<CONFIG | sudo tee /etc/consul.d/consul-client.json
 {
   "datacenter": "${name}",
   "advertise_addr": "$${local_ipv4}",
@@ -77,14 +77,14 @@ cat <<CONFIG >/etc/consul.d/consul-client.json
 CONFIG
 
 echo "Update Consul configuration file permissions"
-chown -R consul:consul /etc/consul.d
-chmod -R 0644 /etc/consul.d/*
-chmod 0755 /etc/pki/tls/private/consul.key /etc/pki/tls/certs/consul.crt
+sudo chown -R consul:consul /etc/consul.d
+sudo chmod -R 0644 /etc/consul.d/*
+sudo chmod 0755 /etc/pki/tls/private/consul.key /etc/pki/tls/certs/consul.crt
 
 echo "Don't start Consul in -dev mode"
 echo '' | sudo tee /etc/consul.d/consul.conf
 
 echo "Restart Consul"
-systemctl restart consul
+sudo systemctl restart consul
 
 echo "[---best-practices-bastion-systemd.sh Complete---]"
