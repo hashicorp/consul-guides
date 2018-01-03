@@ -30,13 +30,13 @@ data "template_file" "bastion_user_data" {
   template = "${file("${path.module}/../../templates/best-practices-bastion-systemd.sh.tpl")}"
 
   vars = {
-    name           = "${var.name}"
-    provider       = "${var.provider}"
-    local_ip_url   = "${var.local_ip_url}"
-    serf_encrypt   = "${random_id.serf_encrypt.b64_std}"
-    consul_ca_pem  = "${element(module.consul_tls_self_signed_cert.ca_public_key_pem, 0)}"
-    consul_crt_pem = "${element(module.consul_tls_self_signed_cert.leaf_cert_pem, 0)}"
-    consul_key_pem = "${element(module.consul_tls_self_signed_cert.leaf_private_key_pem, 0)}"
+    name            = "${var.name}"
+    provider        = "${var.provider}"
+    local_ip_url    = "${var.local_ip_url}"
+    serf_encrypt    = "${random_id.serf_encrypt.b64_std}"
+    consul_ca_crt   = "${element(module.consul_tls_self_signed_cert.ca_cert_pem, 0)}"
+    consul_leaf_crt = "${element(module.consul_tls_self_signed_cert.leaf_cert_pem, 0)}"
+    consul_leaf_key = "${element(module.consul_tls_self_signed_cert.leaf_private_key_pem, 0)}"
   }
 }
 
@@ -69,9 +69,9 @@ data "template_file" "consul_user_data" {
     local_ip_url     = "${var.local_ip_url}"
     bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
     serf_encrypt     = "${random_id.serf_encrypt.b64_std}"
-    consul_ca_pem    = "${element(module.consul_tls_self_signed_cert.ca_public_key_pem, 0)}"
-    consul_crt_pem   = "${element(module.consul_tls_self_signed_cert.leaf_cert_pem, 0)}"
-    consul_key_pem   = "${element(module.consul_tls_self_signed_cert.leaf_private_key_pem, 0)}"
+    consul_ca_crt    = "${element(module.consul_tls_self_signed_cert.ca_cert_pem, 0)}"
+    consul_leaf_crt  = "${element(module.consul_tls_self_signed_cert.leaf_cert_pem, 0)}"
+    consul_leaf_key  = "${element(module.consul_tls_self_signed_cert.leaf_private_key_pem, 0)}"
   }
 }
 

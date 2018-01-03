@@ -2,9 +2,6 @@
 
 echo "[---Begin quick-start-consul-systemd.sh---]"
 
-echo "Update resolv.conf"
-sudo sed -i '1i nameserver 127.0.0.1\n' /etc/resolv.conf
-
 echo "Set variables"
 LOCAL_IPV4=$(curl -s ${local_ip_url})
 
@@ -24,9 +21,8 @@ cat <<CONFIG | sudo tee /etc/consul.d/consul-server.json
 }
 CONFIG
 
-echo "Update configuration file permissions"
-sudo chown -R consul:consul /etc/consul.d
-sudo chmod -R 0644 /etc/consul.d/*
+echo "Update configuration file owner"
+sudo chown consul:consul /etc/consul.d/consul-server.json
 
 echo "Don't start Consul in -dev mode"
 echo '' | sudo tee /etc/consul.d/consul.conf

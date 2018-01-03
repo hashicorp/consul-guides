@@ -6,20 +6,60 @@ A private RSA key has been generated and downloaded locally. The file permission
 
 Run the below command to add this private key to the list maintained by ssh-agent so you're not prompted for it when using SSH or scp to connect to hosts with your public key.
 
-  ${join("\n  ", formatlist("ssh-add %s", module.ssh_keypair_aws_override.private_key_filename))}
+  ${join("\n  ", formatlist("$ ssh-add %s", module.ssh_keypair_aws_override.private_key_filename))}
 
 The public part of the key loaded into the agent ("public_key_openssh" output) has been placed on the target system in ~/.ssh/authorized_keys.
 
 To SSH into a Bastion host using this private key, run one of the below commands.
 
-  ${join("\n  ", formatlist("ssh -A -i %s %s@%s", module.ssh_keypair_aws_override.private_key_filename, module.network_aws.bastion_username, module.network_aws.bastion_ips_public))}
+  ${join("\n  ", formatlist("$ ssh -A -i %s %s@%s", module.ssh_keypair_aws_override.private_key_filename, module.network_aws.bastion_username, module.network_aws.bastion_ips_public))}
+
+You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html) or API (https://www.consul.io/api/index.html) commands.
+
+  # Use the CLI to retrieve the Consul members, write a key/value, and read that key/value
+  $ consul members
+  $ consul kv put foo bar=baz
+  $ consul kv get foo
+
+  # Use the API to retrieve the Consul members, write a key/value, and read that key/value
+  $ curl \
+    http://127.0.0.1:8500/v1/agent/members
+  $ curl \
+      -X PUT \
+      -d '{"bar=baz"}' \
+      http://127.0.0.1:8500/v1/kv/foo
+  $ curl \
+      http://127.0.0.1:8500/v1/kv/foo
+
+To SSH into one of the Consul server nodes from the Bastion host, run the below command and it will use Consul DNS to lookup the address of one of the healthy Consul server nodes and SSH you in.
+
+  ssh -A ${module.consul_aws.consul_username}@consul.service.consul
 
 To force the generation of a new key, the private key instance can be "tainted" using the below command.
 
   terraform taint -module=ssh_keypair_aws_override.tls_private_key tls_private_key.main
+
+Below are output variables that are currently commented out to reduce clutter. If you need the value of a certain output variable, such as "private_key_pem", just uncomment in outputs.tf.
+
+ - "vpc_cidr_block"
+ - "vpc_id"
+ - "subnet_public_ids"
+ - "subnet_private_ids"
+ - "bastion_security_group"
+ - "bastion_ips_public"
+ - "bastion_username"
+ - "private_key_name"
+ - "private_key_filename"
+ - "private_key_pem"
+ - "public_key_pem"
+ - "public_key_openssh"
+ - "ssh_key_name"
+ - "consul_asg_id"
+ - "consul_sg_id"
 README
 }
 
+/*
 output "vpc_cidr_block" {
   value = "${module.network_aws.vpc_cidr_block}"
 }
@@ -79,3 +119,4 @@ output "consul_asg_id" {
 output "consul_sg_id" {
   value = "${module.consul_aws.consul_sg_id}"
 }
+*/

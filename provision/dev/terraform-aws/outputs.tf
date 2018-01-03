@@ -6,18 +6,51 @@ A private RSA key has been generated and downloaded locally. The file permission
 
 Run the below command to add this private key to the list maintained by ssh-agent so you're not prompted for it when using SSH or scp to connect to hosts with your public key.
 
-  ${join("\n  ", formatlist("ssh-add %s", module.ssh_keypair_aws.private_key_filename))}
+  ${join("\n  ", formatlist("$ ssh-add %s", module.ssh_keypair_aws.private_key_filename))}
 
 The public part of the key loaded into the agent ("public_key_openssh" output) has been placed on the target system in ~/.ssh/authorized_keys.
 
 To SSH into a Consul host using this private key, run the below command after replacing "HOST" with the public IP of one of the provisioned Consul hosts.
 
-  ${join("\n  ", formatlist("ssh -A -i %s %s@HOST", module.ssh_keypair_aws.private_key_filename, module.consul_aws.consul_username))}
+  ${join("\n  ", formatlist("$ ssh -A -i %s %s@HOST", module.ssh_keypair_aws.private_key_filename, module.consul_aws.consul_username))}
+
+You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html) or API (https://www.consul.io/api/index.html) commands.
+
+  # Use the CLI to retrieve the Consul members, write a key/value, and read that key/value
+  $ consul members
+  $ consul kv put foo bar=baz
+  $ consul kv get foo
+
+  # Use the API to retrieve the Consul members, write a key/value, and read that key/value
+  $ curl \
+    http://127.0.0.1:8500/v1/agent/members
+  $ curl \
+      -X PUT \
+      -d '{"bar=baz"}' \
+      http://127.0.0.1:8500/v1/kv/foo
+  $ curl \
+      http://127.0.0.1:8500/v1/kv/foo
 
 Because this is a development environment, the Consul nodes are in a public subnet with SSH access open from the outside. WARNING - DO NOT DO THIS IN PRODUCTION!
+
+Below are output variables that are currently commented out to reduce clutter. If you need the value of a certain output variable, such as "private_key_pem", just uncomment in outputs.tf.
+
+ - "vpc_cidr_block"
+ - "vpc_id"
+ - "subnet_public_ids"
+ - "subnet_private_ids"
+ - "private_key_name"
+ - "private_key_filename"
+ - "private_key_pem"
+ - "public_key_pem"
+ - "public_key_openssh"
+ - "ssh_key_name"
+ - "consul_asg_id"
+ - "consul_sg_id"
 README
 }
 
+/*
 output "vpc_cidr_block" {
   value = "${module.network_aws.vpc_cidr_block}"
 }
@@ -65,3 +98,4 @@ output "consul_asg_id" {
 output "consul_sg_id" {
   value = "${module.consul_aws.consul_sg_id}"
 }
+*/
