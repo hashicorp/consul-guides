@@ -4,9 +4,10 @@ echo "[---Begin quick-start-consul-systemd.sh---]"
 
 echo "Set variables"
 LOCAL_IPV4=$(curl -s ${local_ip_url})
+CONSUL_CONFIG_FILE=/etc/consul.d/consul-server.json
 
 echo "Configure Consul server"
-cat <<CONFIG | sudo tee /etc/consul.d/consul-server.json
+cat <<CONFIG | sudo tee $CONSUL_CONFIG_FILE
 {
   "datacenter": "${name}",
   "advertise_addr": "$LOCAL_IPV4",
@@ -21,8 +22,8 @@ cat <<CONFIG | sudo tee /etc/consul.d/consul-server.json
 }
 CONFIG
 
-echo "Update configuration file owner"
-sudo chown consul:consul /etc/consul.d/consul-server.json
+echo "Update Consul configuration file permissions"
+sudo chown consul:consul $CONSUL_CONFIG_FILE
 
 echo "Don't start Consul in -dev mode"
 echo '' | sudo tee /etc/consul.d/consul.conf

@@ -6,48 +6,53 @@ echo "Update resolv.conf"
 sudo sed -i '1i nameserver 127.0.0.1\n' /etc/resolv.conf
 
 echo "Set variables"
-local_ipv4=$(curl -s ${local_ip_url})
+LOCAL_IPV4=$(curl -s ${local_ip_url})
+CONSUL_TLS_PATH=/opt/consul/tls
+CONSUL_CACERT_PATH="$CONSUL_TLS_PATH/ca.crt"
+CONSUL_CLIENT_CERT_PATH="$CONSUL_TLS_PATH/consul.crt"
+CONSUL_CLIENT_KEY_PATH="$CONSUL_TLS_PATH/consul.key"
+CONSUL_CONFIG_FILE=/etc/consul.d/consul-client.json
 
-echo "Create pki dir for Consul certs"
-sudo mkdir -pm 0755 /opt/consul/pki
+echo "Create TLS dir for Consul certs"
+sudo mkdir -pm 0755 $CONSUL_TLS_PATH
 
-echo "Write Consul CA certificate to /etc/consul.d/pki/ca.crt"
-cat <<EOF | sudo tee /opt/consul/pki/ca.crt
+echo "Write Consul CA certificate to $CONSUL_CACERT_PATH"
+cat <<EOF | sudo tee $CONSUL_CACERT_PATH
 ${consul_ca_crt}
 EOF
 
-echo "Write Consul certificate to /etc/consul.d/pki/consul.crt"
-cat <<EOF | sudo tee /opt/consul/pki/consul.crt
+echo "Write Consul certificate to $CONSUL_CLIENT_CERT_PATH"
+cat <<EOF | sudo tee $CONSUL_CLIENT_CERT_PATH
 ${consul_leaf_crt}
 EOF
 
-echo "Write Consul certificate key to /etc/consul.d/pki/consul.key"
-cat <<EOF | sudo tee /opt/consul/pki/consul.key
+echo "Write Consul certificate key to $CONSUL_CLIENT_KEY_PATH"
+cat <<EOF | sudo tee $CONSUL_CLIENT_KEY_PATH
 ${consul_leaf_key}
 EOF
 
 echo "Configure Bastion Consul client"
-cat <<CONFIG | sudo tee /etc/consul.d/consul-client.json
+cat <<CONFIG | sudo tee $CONSUL_CONFIG_FILE
 {
   "datacenter": "${name}",
-  "advertise_addr": "$${local_ipv4}",
+  "advertise_addr": "$LOCAL_IPV4",
   "data_dir": "/opt/consul/data",
   "client_addr": "0.0.0.0",
   "log_level": "INFO",
   "ui": true,
   "retry_join": ["provider=${provider} tag_key=Consul-Auto-Join tag_value=${name}"],
   "encrypt": "${serf_encrypt}",
-  "ca_file": "/opt/consul/pki/ca.crt",
-  "cert_file": "/opt/consul/pki/consul.crt",
-  "key_file": "/opt/consul/pki/consul.key",
+  "ca_file": "$CONSUL_CACERT_PATH",
+  "cert_file": "$CONSUL_CLIENT_CERT_PATH",
+  "key_file": "$CONSUL_CLIENT_KEY_PATH",
   "verify_incoming": true,
   "verify_outgoing": true,
   "ports": { "https": 8080 }
 }
 CONFIG
 
-echo "Update Consul configuration & certificates file owners"
-sudo chown -R consul:consul /etc/consul.d/consul-client.json /opt/consul/pki
+echo "Update Consul configuration & certificates file permissions"
+sudo chown -R consul:consul $CONSUL_CONFIG_FILE $CONSUL_TLS_PATH
 
 echo "Don't start Consul in -dev mode"
 echo '' | sudo tee /etc/consul.d/consul.conf
@@ -55,7 +60,7 @@ echo '' | sudo tee /etc/consul.d/consul.conf
 echo "Restart Consul"
 sudo systemctl restart consul
 
-echo "Stopping Vault & Nomad"
+echo "Stopping Vault & Nomad since they're not being used"
 sudo systemctl stop vault
 sudo systemctl stop nomad
 
