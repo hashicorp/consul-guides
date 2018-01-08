@@ -10,7 +10,7 @@ module "consul_auto_join_instance_role" {
   name = "${var.name}"
 }
 
-resource "random_id" "serf_encrypt" {
+resource "random_id" "consul_encrypt" {
   byte_length = 16
 }
 
@@ -33,7 +33,7 @@ data "template_file" "bastion_user_data" {
     name            = "${var.name}"
     provider        = "${var.provider}"
     local_ip_url    = "${var.local_ip_url}"
-    serf_encrypt    = "${random_id.serf_encrypt.b64_std}"
+    consul_encrypt  = "${random_id.consul_encrypt.b64_std}"
     consul_ca_crt   = "${element(module.consul_tls_self_signed_cert.ca_cert_pem, 0)}"
     consul_leaf_crt = "${element(module.consul_tls_self_signed_cert.leaf_cert_pem, 0)}"
     consul_leaf_key = "${element(module.consul_tls_self_signed_cert.leaf_private_key_pem, 0)}"
@@ -67,8 +67,8 @@ data "template_file" "consul_user_data" {
     name             = "${var.name}"
     provider         = "${var.provider}"
     local_ip_url     = "${var.local_ip_url}"
-    bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
-    serf_encrypt     = "${random_id.serf_encrypt.b64_std}"
+    consul_bootstrap = "${length(module.network_aws.subnet_private_ids)}"
+    consul_encrypt   = "${random_id.consul_encrypt.b64_std}"
     consul_ca_crt    = "${element(module.consul_tls_self_signed_cert.ca_cert_pem, 0)}"
     consul_leaf_crt  = "${element(module.consul_tls_self_signed_cert.leaf_cert_pem, 0)}"
     consul_leaf_key  = "${element(module.consul_tls_self_signed_cert.leaf_private_key_pem, 0)}"

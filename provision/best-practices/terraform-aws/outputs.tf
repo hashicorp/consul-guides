@@ -1,6 +1,6 @@
 output "zREADME" {
   value = <<README
-Your AWS Consul cluster has been successfully provisioned!
+Your "${var.name}" Consul cluster has been successfully provisioned!
 
 A private RSA key has been generated and downloaded locally. The file permissions have been changed to 0600 so the key can be used immediately for SSH or scp.
 
@@ -23,13 +23,13 @@ You can now interact with Consul using any of the CLI (https://www.consul.io/doc
 
   # Use the API to retrieve the Consul members, write a key/value, and read that key/value
   $ curl \
-    http://127.0.0.1:8500/v1/agent/members
+      http://127.0.0.1:8500/v1/agent/members | jq '.'
   $ curl \
       -X PUT \
       -d '{"bar=baz"}' \
-      http://127.0.0.1:8500/v1/kv/foo
+      http://127.0.0.1:8500/v1/kv/foo | jq '.'
   $ curl \
-      http://127.0.0.1:8500/v1/kv/foo
+      http://127.0.0.1:8500/v1/kv/foo | jq '.'
 
 To SSH into one of the Consul server nodes from the Bastion host, run the below command and it will use Consul DNS to lookup the address of one of the healthy Consul server nodes and SSH you in.
 

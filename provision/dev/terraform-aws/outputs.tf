@@ -23,13 +23,13 @@ You can now interact with Consul using any of the CLI (https://www.consul.io/doc
 
   # Use the API to retrieve the Consul members, write a key/value, and read that key/value
   $ curl \
-    http://127.0.0.1:8500/v1/agent/members
+    http://127.0.0.1:8500/v1/agent/members | jq '.'
   $ curl \
       -X PUT \
       -d '{"bar=baz"}' \
-      http://127.0.0.1:8500/v1/kv/foo
+      http://127.0.0.1:8500/v1/kv/foo | jq '.'
   $ curl \
-      http://127.0.0.1:8500/v1/kv/foo
+      http://127.0.0.1:8500/v1/kv/foo | jq '.'
 
 Because this is a development environment, the Consul nodes are in a public subnet with SSH access open from the outside. WARNING - DO NOT DO THIS IN PRODUCTION!
 

@@ -16,7 +16,7 @@ cat <<CONFIG | sudo tee $CONSUL_CONFIG_FILE
   "log_level": "INFO",
   "ui": true,
   "server": true,
-  "bootstrap_expect": ${bootstrap_expect},
+  "bootstrap_expect": ${consul_bootstrap},
   "leave_on_terminate": true,
   "retry_join": ["provider=${provider} tag_key=Consul-Auto-Join tag_value=${name}"]
 }
@@ -26,7 +26,8 @@ echo "Update Consul configuration file permissions"
 sudo chown consul:consul $CONSUL_CONFIG_FILE
 
 echo "Don't start Consul in -dev mode"
-echo '' | sudo tee /etc/consul.d/consul.conf
+cat <<SWITCHES | sudo tee /etc/consul.d/consul.conf
+SWITCHES
 
 echo "Restart Consul"
 sudo systemctl restart consul
