@@ -20,4 +20,7 @@ curl https://raw.githubusercontent.com/hashicorp/guides-configuration/f-refactor
 echo "Install Consul Systemd"
 curl https://raw.githubusercontent.com/hashicorp/guides-configuration/f-refactor/consul/scripts/install-consul-systemd.sh | bash
 
+echo "Cleanup install files"
+curl https://raw.githubusercontent.com/hashicorp/guides-configuration/f-refactor/shared/scripts/cleanup.sh | bash
+
 echo "[---install-consul-systemd.sh Complete---]"
