@@ -33,7 +33,7 @@ You can now interact with Consul using any of the CLI (https://www.consul.io/doc
 
 To SSH into one of the Consul server nodes from the Bastion host, run the below command and it will use Consul DNS to lookup the address of one of the healthy Consul server nodes and SSH you in.
 
-  ssh -A ${module.consul_aws.consul_username}@consul.service.consul
+  $ ssh -A ${module.consul_aws.consul_username}@consul.service.consul
 
 To force the generation of a new key, the private key instance can be "tainted" using the below command.
 
