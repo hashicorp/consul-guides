@@ -20,5 +20,5 @@ variable "consul_release_version" { }
 variable "consul_version"         { }
 variable "consul_os"              { }
 variable "consul_os_version"      { }
-variable "consul_count"           { }
+variable "consul_count"           { default = "-1" }
 variable "consul_instance_type"   { }
