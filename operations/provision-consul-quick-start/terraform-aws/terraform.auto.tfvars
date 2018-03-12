@@ -6,3 +6,11 @@ name = "consul-quick-start"
 # consul_version  = "0.9.2" # Consul Version for runtime install, defaults to 0.9.2
 # consul_url      = "" # Consul Enterprise download URL for runtime install, defaults to Consul OSS
 # consul_image_id = "" # AMI ID override, defaults to base RHEL AMI
+
+# Example tags
+# network_tags = {"owner" = "hashicorp", "TTL" = "24"}
+
+# consul_tags = [
+#   {"key" = "owner", "value" = "hashicorp", "propagate_at_launch" = true},
+#   {"key" = "TTL", "value" = "24", "propagate_at_launch" = true}
+# ]

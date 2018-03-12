@@ -7,3 +7,13 @@ variable "ami_name"     { default = "*RHEL-7.3_HVM_GA-*" } # Base RHEL name
 variable "consul_version"  { default = "0.9.2" }
 variable "consul_url"      { default = "" }
 variable "consul_image_id" { default = "" }
+
+variable "network_tags" {
+  type    = "map"
+  default = { }
+}
+
+variable "consul_tags" {
+  type    = "list"
+  default = [ ]
+}

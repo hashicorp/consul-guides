@@ -22,3 +22,13 @@ variable "consul_os"              { }
 variable "consul_os_version"      { }
 variable "consul_count"           { }
 variable "consul_instance_type"   { }
+
+variable "network_tags" {
+  type    = "map"
+  default = { }
+}
+
+variable "consul_tags" {
+  type    = "list"
+  default = [ ]
+}

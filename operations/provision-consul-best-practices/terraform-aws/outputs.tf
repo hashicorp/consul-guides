@@ -37,7 +37,7 @@ To SSH into one of the Consul server nodes from the Bastion host, run the below 
 
 To force the generation of a new key, the private key instance can be "tainted" using the below command.
 
-  terraform taint -module=ssh_keypair_aws_override.tls_private_key tls_private_key.key
+  $ terraform taint -module=ssh_keypair_aws_override.tls_private_key tls_private_key.key
 
 Below are output variables that are currently commented out to reduce clutter. If you need the value of a certain output variable, such as "private_key_pem", just uncomment in outputs.tf.
 

@@ -87,5 +87,28 @@ Vagrant.configure("2") do |config|
   end
 
    config.vm.post_up_message = "
-Consul: http://#{private_ip}:#{consul_host_port}/"
+Your Consul dev cluster has been successfully provisioned!
+
+To SSH into the Consul host, run the below command.
+
+  $ vagrant ssh
+
+You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html) or API (https://www.consul.io/api/index.html) commands.
+
+  # Use the CLI to retrieve the Consul members, write a key/value, and read that key/value
+  $ consul members
+  $ consul kv put cli bar=baz
+  $ consul kv get cli
+
+  # Use the API to retrieve the Consul members, write a key/value, and read that key/value
+  $ curl http://127.0.0.1:8500/v1/agent/members | jq '.'
+  $ curl -X PUT -d '{\"bar=baz\"}' http://127.0.0.1:8500/v1/kv/api | jq '.'
+  $ curl http://127.0.0.1:8500/v1/kv/api | jq '.'
+
+Visit the Consul UI: http://#{private_ip}:#{consul_host_port}/
+
+Don't forget to tear your VM down after.
+
+  $ vagrant destroy
+"
 end
