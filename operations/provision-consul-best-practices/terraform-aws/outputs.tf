@@ -6,7 +6,7 @@ A private RSA key has been generated and downloaded locally. The file permission
 
 If you're not running Terraform locally (e.g. in TFE or Jenkins) but are using remote state and need the private key locally for SSH, run the below command to download.
 
-  $ echo "$(terraform output private_key_pem)" > ${element(module.ssh_keypair_aws.private_key_filename, 0)} && chmod 0600 ${element(module.ssh_keypair_aws.private_key_filename, 0)}
+  ${join("\n  ", formatlist("$ echo \"$(terraform output private_key_pem)\" > %s && chmod 0600 %s", module.ssh_keypair_aws_override.private_key_filename, module.ssh_keypair_aws_override.private_key_filename))}
 
 Run the below command to add this private key to the list maintained by ssh-agent so you're not prompted for it when using SSH or scp to connect to hosts with your public key.
 
