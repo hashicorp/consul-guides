@@ -14,8 +14,8 @@ bastion_count           = "1" # Number of bastion hosts to provision across publ
 bastion_instance_type   = "t2.small"
 
 # Consul module
-consul_release_version = "0.1.0-dev1" # Release version tag (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1)
-consul_version         = "0.9.2" # Consul version tag (e.g. 0.9.2 or 0.9.2-ent) - https://releases.hashicorp.com/consul/
+consul_release_version = "0.1.1-dev1" # Release version tag (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1)
+consul_version         = "1.0.6" # Consul version tag (e.g. 0.9.2 or 0.9.2-ent) - https://releases.hashicorp.com/consul/
 consul_os              = "RHEL" # OS (e.g. RHEL, Ubuntu)
 consul_os_version      = "7.3" # OS Version (e.g. 7.3 for RHEL, 16.04 for Ubuntu)
 consul_count           = "3" # Number of Consul nodes to provision across public subnets, defaults to public subnet count.
