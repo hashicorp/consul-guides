@@ -29,10 +29,10 @@ These may include use cases installing Consul in cloud services via Terraform, o
 
 ### Guides
 
-- [ ] Provision a Dev Consul Cluster locally with Vagrant
-- [ ] Provision a Dev Consul Cluster on AWS with Terraform
-- [ ] Provision a Quick Start Consul Cluster on AWS with Terraform
-- [ ] Provision a Best Practices Consul Cluster on AWS with Terraform
+- [Provision a Dev Consul Cluster locally with Vagrant](operations/provision-consul/dev/vagrant-local)
+- [Provision a Dev Consul Cluster on AWS with Terraform](operations/provision-consul/dev/terraform-aws)
+- [Provision a Quick Start Consul Cluster on AWS with Terraform](operations/provision-consul/quick-start/terraform-aws)
+- [Provision a Best Practices Consul Cluster on AWS with Terraform](operations/provision-consul/best-practices/terraform-aws)
 
 ## Operations
 

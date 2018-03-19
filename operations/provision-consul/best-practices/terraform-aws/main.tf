@@ -42,7 +42,6 @@ data "template_file" "bastion_user_data" {
 
 module "network_aws" {
   source = "github.com/hashicorp-modules/network-aws?ref=f-refactor"
-  # source = "../../../../../hashicorp-modules/network-aws"
 
   name              = "${var.name}"
   vpc_cidr          = "${var.vpc_cidr}"
