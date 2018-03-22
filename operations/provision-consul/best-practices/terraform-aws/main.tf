@@ -1,13 +1,11 @@
 module "ssh_keypair_aws_override" {
-  # source = "github.com/hashicorp-modules/ssh-keypair-aws?ref=f-refactor"
-  source = "../../../../../../hashicorp-modules/ssh-keypair-aws"
+  source = "github.com/hashicorp-modules/ssh-keypair-aws?ref=f-refactor"
 
   name = "${var.name}-override"
 }
 
 module "consul_auto_join_instance_role" {
-  # source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
-  source = "../../../../../../hashicorp-modules/consul-auto-join-instance-role-aws"
+  source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
 
   name = "${var.name}"
 }
@@ -17,8 +15,7 @@ resource "random_id" "consul_encrypt" {
 }
 
 module "consul_tls_self_signed_cert" {
-  # source = "github.com/hashicorp-modules/tls-self-signed-cert?ref=f-refactor"
-  source = "../../../../../../hashicorp-modules/tls-self-signed-cert"
+  source = "github.com/hashicorp-modules/tls-self-signed-cert?ref=f-refactor"
 
   name                  = "${var.name}-consul"
   validity_period_hours = "24"
@@ -44,8 +41,7 @@ data "template_file" "bastion_user_data" {
 }
 
 module "network_aws" {
-  # source = "github.com/hashicorp-modules/network-aws?ref=f-refactor"
-  source = "../../../../../../hashicorp-modules/network-aws"
+  source = "github.com/hashicorp-modules/network-aws?ref=f-refactor"
 
   name              = "${var.name}"
   vpc_cidr          = "${var.vpc_cidr}"
@@ -81,8 +77,7 @@ data "template_file" "consul_user_data" {
 }
 
 module "consul_aws" {
-  # source = "github.com/hashicorp-modules/consul-aws?ref=f-refactor"
-  source = "../../../../../hashicorp-modules/consul-aws"
+  source = "github.com/hashicorp-modules/consul-aws?ref=f-refactor"
 
   name             = "${var.name}" # Must match network_aws module name for Consul Auto Join to work
   vpc_id           = "${module.network_aws.vpc_id}"
