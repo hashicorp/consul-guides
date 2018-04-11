@@ -1,11 +1,14 @@
-----
--	Website: https://www.vaultproject.io
--  GitHub repository: https://github.com/hashicorp/vault
--	IRC: `#vault-tool` on Freenode
--	Announcement list: [Google Groups](https://groups.google.com/group/hashicorp-announce)
--	Discussion list: [Google Groups](https://groups.google.com/group/vault-tool)
+---
+- Website: https://consul.io
+- GitHub repository: [https://github.com/hashicorp/consul-guides](https://github.com/hashicorp/consul-guides)
+- [Gitter](http://gitter.im) [hashicorp-consul](https://gitter.im/hashicorp-consul/Lobby)
+- Announcement list: [Google Groups hashicorp-announce](https://groups.google.com/group/hashicorp-announce)
+- Discussion list: [Google Groups consul-tool](https://groups.google.com/group/consul-tool)
+- Discussion list: [Google Groups](https://groups.google.com/group/vault-tool)
 
-<img width="300" alt="Vault Logo" src="https://cloud.githubusercontent.com/assets/416727/24112835/03b57de4-0d58-11e7-81f5-9056cac5b427.png">
+---
+
+<img src="common/images/Consul_VerticalLogo_FullColor.r1x9c1CS6x.svg" width="15%">
 
 ----
 # Consul Guides
@@ -14,7 +17,7 @@ This repository aims to assist individuals in learning how to install, configure
 
 ## Disclaimer
 
-This repo is a work in progress. We've decided to open source it while we build as the initial examples may be useful for some. Please bare with us while we work to create meaningful content that will be useful for all.
+This repo is a work in progress. We've decided to open source it while we build as the initial examples may be useful for some. Please bear with us while we work to create meaningful content that will be useful for all.
 
 ## Provision Guides
 
@@ -26,18 +29,19 @@ These may include use cases installing Consul in cloud services via Terraform, o
 
 ### Guides
 
-- [Provision a Dev Consul Cluster locally with Vagrant](provision/consul-dev/vagrant-local)
-- [Provision a Dev Consul Cluster on AWS with Terraform](provision/consul-dev/terraform-aws)
-- [Provision a Quick Start Consul Cluster on AWS with Terraform](provision/consul-quick-start/terraform-aws)
-- [Provision a Best Practices Consul Cluster on AWS with Terraform](provision/consul-best-practices/terraform-aws)
+- [ ] Provision a Dev Consul Cluster locally with Vagrant
+- [ ] Provision a Dev Consul Cluster on AWS with Terraform
+- [ ] Provision a Quick Start Consul Cluster on AWS with Terraform
+- [ ] Provision a Best Practices Consul Cluster on AWS with Terraform
 
 ## Operations
 
-This area contains example use cases for how to operationalize Vault.
+Guides for Operations tasks like scale/de-scale, upgrades, and backups.
 
 ### Guides
 
-None yet, check back soon or feel free to [contribute](CONTRIBUTING.md)!
+* [x] [Automated Upgrades with Consul Enterprise](operations/automated-upgrades)
+* [ ] Automated Backups with Consul Enterprise
 
 ## Service Discovery Guides
 
