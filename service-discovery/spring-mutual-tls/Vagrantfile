@@ -1,0 +1,158 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$base = <<BASE
+sudo yum update
+sudo yum install -y unzip curl jq vim java-1.8.0-openjdk-devel
+BASE
+
+$install_pki = <<INSTALL_PKI
+rm -rf /vagrant/certs
+mkdir /vagrant/certs
+cd /vagrant/certs
+openssl req -x509 -new -nodes -newkey rsa:4096 -out rootCA.pem -keyout rootCA.key -days 500 -subj "/C=US/ST=CA/L=SF/O=Hashicorp/CN=*.example.com"
+openssl genrsa -out spring.key 2048
+openssl req -new -newkey rsa:4096 -key spring.key \
+    -out spring.csr \
+    -subj "/C=US/ST=CA/L=SF/O=Hashicorp/CN=spring.example.com"
+openssl x509 -req -in spring.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out spring.crt
+openssl pkcs12 -export -in spring.crt -inkey spring.key -name spring -out spring.p12 -password pass:Password1
+keytool -importkeystore -deststorepass Password1 -destkeystore keystore.jks -srckeystore spring.p12 -srcstoretype PKCS12 --srcstorepass Password1
+keytool -import -file rootCA.pem -alias ca -keystore keystore.jks -storepass Password1 -noprompt
+INSTALL_PKI
+
+$install_anchor = <<INSTALL_ANCHOR
+sudo cp /vagrant/certs/rootCA.pem /etc/pki/ca-trust/source/anchors/rootCA.pem
+sudo update-ca-trust
+INSTALL_ANCHOR
+
+$install_consul = <<INTSTALL_CONSUL
+CONSUL_VERSION=1.0.6
+CONSUL_ZIP=/vagrant/bin/consul_${CONSUL_VERSION}_linux_amd64.zip
+if [ ! -f $CONSUL_ZIP ]; then
+  mkdir -p /vagrant/bin
+  wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip --quiet -O $CONSUL_ZIP
+fi
+unzip -q $CONSUL_ZIP
+sudo chmod +x consul
+sudo mv consul /usr/bin/consul
+sudo mkdir -p /etc/systemd/system/consul.d/
+INTSTALL_CONSUL
+
+$consul_server = <<CONSUL_SERVER_CONFIG
+sudo cat << EOF > /etc/systemd/system/consul.d/consul.json
+{
+  "datacenter": "dc1",
+  "node_name": "$(hostname -f)",
+  "data_dir": "/opt/consul/data",
+  "ui": true,
+  "client_addr": "0.0.0.0",
+  "bind_addr": "0.0.0.0",
+  "advertise_addr": "$(/usr/sbin/ifconfig enp0s8 | grep 'inet ' | awk '{print $2}')",
+  "leave_on_terminate": false,
+  "skip_leave_on_interrupt": true,
+  "server": true,
+  "bootstrap_expect": 1,
+  "retry_join": ["172.20.20.10"]
+}
+EOF
+CONSUL_SERVER_CONFIG
+
+$consul_client = <<CONSUL_CLIENT_CONFIG
+sudo cat << EOF > /etc/systemd/system/consul.d/consul.json
+{
+  "datacenter": "dc1",
+  "node_name": "$(hostname -f)",
+  "data_dir": "/opt/consul/data",
+  "ui": true,
+  "client_addr": "0.0.0.0",
+  "bind_addr": "0.0.0.0",
+  "advertise_addr": "$(/usr/sbin/ifconfig enp0s8 | grep 'inet ' | awk '{print $2}')",
+  "leave_on_terminate": false,
+  "skip_leave_on_interrupt": true,
+  "server": false,
+  "retry_join": ["172.20.20.10"],
+  "key_file": "/vagrant/certs/spring.key",
+  "cert_file": "/vagrant/certs/spring.crt",
+  "ca_file": "/vagrant/certs/rootCA.pem",
+  "enable_agent_tls_for_checks": true
+}
+EOF
+CONSUL_CLIENT_CONFIG
+
+$consul_svc = <<CONSUL_SVC
+sudo cat << EOF > /etc/systemd/system/consul.service
+[Unit]
+Description=consul agent
+Requires=network-online.target
+After=network-online.target
+[Service]
+EnvironmentFile=-/etc/default/consul
+Restart=on-failure
+ExecStart=/usr/bin/consul agent $CONSUL_FLAGS -config-dir=/etc/systemd/system/consul.d
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl enable consul.service
+CONSUL_SVC
+
+$spring_svc = <<SPRING_SVC
+sudo cat << EOF > /etc/systemd/system/spring.service
+[Unit]
+Description=spring
+After=syslog.target
+
+[Service]
+User=root
+ExecStart=/var/spring/consul-mutual-tls-0.0.1-SNAPSHOT.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+EOF
+SPRING_SVC
+
+$spring_deploy = <<SPRING_DEPLOY
+wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+yum install -y apache-maven
+cd /vagrant
+mvn install
+sudo mkdir -p /var/spring
+sudo cp /vagrant/target/consul-mutual-tls-0.0.1-SNAPSHOT.jar /var/spring/consul-mutual-tls-0.0.1-SNAPSHOT.jar
+sudo cp /vagrant/certs/keystore.jks /var/spring/keystore.jks
+sudo systemctl enable spring.service
+sudo service spring restart
+SPRING_DEPLOY
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "bento/centos-7.4"
+
+  config.vm.define "consul" do |consul|
+      consul.vm.hostname = "consul.example.com"
+      consul.vm.network "private_network", ip: "172.20.20.10"
+      consul.vm.network "forwarded_port", guest: 8500, host: 8500
+      consul.vm.provision "shell", inline: $base
+      consul.vm.provision "shell", inline: $install_pki
+      consul.vm.provision "shell", inline: $install_anchor
+      consul.vm.provision "shell", inline: $install_consul
+      consul.vm.provision "install consul config", type: "shell", inline: $consul_server
+      consul.vm.provision "install consul svc", type: "shell", inline: $consul_svc
+      consul.vm.provision "consul restart", type: "shell", inline: "sudo service consul restart"
+  end
+  config.vm.define "spring" do |spring|
+      spring.vm.hostname = "spring.example.com"
+      spring.vm.network "private_network", ip: "172.20.20.11"
+      spring.vm.provision "shell", inline: $base
+      spring.vm.provision "shell", inline: $install_anchor
+      spring.vm.provision "shell", inline: $install_consul
+      spring.vm.provision "install consul config", type: "shell", inline: $consul_client
+      spring.vm.provision "install consul svc", type: "shell", inline: $consul_svc
+      spring.vm.provision "consul restart", type: "shell", inline: "sudo service consul restart"
+      spring.vm.provision "spring svc", type: "shell", inline: $spring_svc
+      spring.vm.provision "spring deploy", type: "shell", inline: $spring_deploy
+  end
+end
