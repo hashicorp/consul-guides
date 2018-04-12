@@ -141,4 +141,4 @@ That's it. Learn. Play. Send bug reports and questions. Enjoy.
 ## Contact
 
 * https://github.com/hashicorp/consul-guides
-* https://hashicorp.comx
+* https://hashicorp.com
