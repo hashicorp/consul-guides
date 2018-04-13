@@ -140,7 +140,5 @@ That's it. Learn. Play. Send bug reports and questions. Enjoy.
 
 ## Contact
 
-* Nathan Valentine - nathan @ hashicorp com | nrvale00 @ gmail com
-* https://github.com/hashicorp-guides
+* https://github.com/hashicorp/consul-guides
 * https://hashicorp.com
-* https://github.com/nrvale0
