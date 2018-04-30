@@ -1,46 +1,45 @@
 output "zREADME" {
   value = <<README
-Your "${var.name}" Consul cluster has been successfully provisioned!
 
-A private RSA key has been generated and downloaded locally. The file permissions have been changed to 0600 so the key can be used immediately for SSH or scp.
+Your "${var.name}" AWS Consul dev cluster has been
+successfully provisioned!
 
-If you're not running Terraform locally (e.g. in TFE or Jenkins) but are using remote state and need the private key locally for SSH, run the below command to download.
+${module.network_aws.zREADME}To force the generation of a new key, the private key instance can be
+"tainted" using the below command.
 
-  ${format("$ echo \"$(terraform output private_key_pem)\" > %s && chmod 0600 %s", module.ssh_keypair_aws.private_key_filename, module.ssh_keypair_aws.private_key_filename)}
+  $ terraform taint -module=ssh_keypair_aws_override.tls_private_key \
+      tls_private_key.key
 
-Run the below command to add this private key to the list maintained by ssh-agent so you're not prompted for it when using SSH or scp to connect to hosts with your public key.
+# ------------------------------------------------------------------------------
+# Local HTTP API Requests
+# ------------------------------------------------------------------------------
 
-  ${format("$ ssh-add %s", module.ssh_keypair_aws.private_key_filename)}
+If you're making HTTP API requests outside the Bastion (locally), set
+the below env vars.
 
-The public part of the key loaded into the agent ("public_key_openssh" output) has been placed on the target system in ~/.ssh/authorized_keys.
+The `consul_public` variable must be set to true for requests to work.
 
-To SSH into a Consul host using this private key, run the below command after replacing "HOST" with the public IP of one of the provisioned Consul hosts.
+`consul_public`: ${var.consul_public}
 
-  ${format("$ ssh -A -i %s %s@HOST", module.ssh_keypair_aws.private_key_filename, module.consul_aws.consul_username)}
+  ${format("$ export CONSUL_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
 
-You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html) or API (https://www.consul.io/api/index.html) commands.
+# ------------------------------------------------------------------------------
+# Consul Dev
+# ------------------------------------------------------------------------------
 
-  # Use the CLI to retrieve the Consul members, write a key/value, and read that key/value
-  $ consul members
-  $ consul kv put cli bar=baz
-  $ consul kv get cli
+${format("Consul UI: http://%s %s", module.consul_aws.consul_lb_dns, var.consul_public ? "(Public)" : "(Internal)")}
 
-  # Use the API to retrieve the Consul members, write a key/value, and read that key/value
-  $ curl \
-    http://127.0.0.1:8500/v1/agent/members | jq '.'
-  $ curl \
-      -X PUT \
-      -d '{"bar=baz"}' \
-      http://127.0.0.1:8500/v1/kv/api | jq '.'
-  $ curl \
-      http://127.0.0.1:8500/v1/kv/api | jq '.'
+You can SSH into the Consul node by updating the "PUBLIC_IP" and running the
+below command.
 
-Because this is a development environment, the Consul nodes are in a public subnet with SSH access open from the outside. WARNING - DO NOT DO THIS IN PRODUCTION!
+  $ ${format("ssh -A -i %s %s@%s", module.ssh_keypair_aws.private_key_filename, module.consul_aws.consul_username, "PUBLIC_IP")}
+
+${module.consul_aws.zREADME}
 README
 }
 
-output "vpc_cidr_block" {
-  value = "${module.network_aws.vpc_cidr_block}"
+output "vpc_cidr" {
+  value = "${module.network_aws.vpc_cidr}"
 }
 
 output "vpc_id" {
@@ -85,4 +84,16 @@ output "consul_asg_id" {
 
 output "consul_sg_id" {
   value = "${module.consul_aws.consul_sg_id}"
+}
+
+output "consul_lb_sg_id" {
+  value = "${module.consul_aws.consul_lb_sg_id}"
+}
+
+output "consul_tg_http_8500_arn" {
+  value = "${module.consul_aws.consul_tg_http_8500_arn}"
+}
+
+output "consul_lb_dns" {
+  value = "${module.consul_aws.consul_lb_dns}"
 }

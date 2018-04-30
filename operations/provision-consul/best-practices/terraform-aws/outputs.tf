@@ -1,52 +1,48 @@
 output "zREADME" {
   value = <<README
-Your "${var.name}" Consul cluster has been successfully provisioned!
 
-A private RSA key has been generated and downloaded locally. The file permissions have been changed to 0600 so the key can be used immediately for SSH or scp.
+Your "${var.name}" AWS Consul Best Practices cluster has been
+successfully provisioned!
 
-If you're not running Terraform locally (e.g. in TFE or Jenkins) but are using remote state and need the private key locally for SSH, run the below command to download.
+${module.network_aws.zREADME}To force the generation of a new key, the private key instance can be "tainted"
+using the below command.
 
-  ${format("$ echo \"$(terraform output private_key_pem)\" > %s && chmod 0600 %s", module.ssh_keypair_aws_override.private_key_filename, module.ssh_keypair_aws_override.private_key_filename)}
+  $ terraform taint -module=ssh_keypair_aws_override.tls_private_key \
+      tls_private_key.key
+${var.download_certs ?
+"\n${module.root_tls_self_signed_ca.zREADME}
+${module.leaf_tls_self_signed_cert.zREADME}
+# ------------------------------------------------------------------------------
+# Local HTTP API Requests
+# ------------------------------------------------------------------------------
 
-Run the below command to add this private key to the list maintained by ssh-agent so you're not prompted for it when using SSH or scp to connect to hosts with your public key.
+If you're making HTTPS API requests outside the Bastion (locally), set
+the below env vars.
 
-  ${format("$ ssh-add %s", module.ssh_keypair_aws_override.private_key_filename)}
+The `consul_public` variable must be set to true for requests to work.
 
-The public part of the key loaded into the agent ("public_key_openssh" output) has been placed on the target system in ~/.ssh/authorized_keys.
+`consul_public`: ${var.consul_public}
 
-To SSH into a Bastion host using this private key, run one of the below commands.
+  $ export CONSUL_ADDR=https://${module.consul_aws.consul_lb_dns}:8080 # HTTPS
+  $ export CONSUL_ADDR=http://${module.consul_aws.consul_lb_dns}:8500 # HTTP
+  $ export CONSUL_CACERT=./${module.leaf_tls_self_signed_cert.ca_cert_filename}
+  $ export CONSUL_CLIENT_CERT=./${module.leaf_tls_self_signed_cert.leaf_cert_filename}
+  $ export CONSUL_CLIENT_KEY=./${module.leaf_tls_self_signed_cert.leaf_private_key_filename}\n" : ""}
+# ------------------------------------------------------------------------------
+# Consul Best Practices
+# ------------------------------------------------------------------------------
 
-  ${join("\n  ", formatlist("$ ssh -A -i %s %s@%s", module.ssh_keypair_aws_override.private_key_filename, module.network_aws.bastion_username, module.network_aws.bastion_ips_public))}
-
-You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html) or API (https://www.consul.io/api/index.html) commands.
-
-  # Use the CLI to retrieve the Consul members, write a key/value, and read that key/value
-  $ consul members
-  $ consul kv put cli bar=baz
-  $ consul kv get cli
-
-  # Use the API to retrieve the Consul members, write a key/value, and read that key/value
-  $ curl \
-      http://127.0.0.1:8500/v1/agent/members | jq '.'
-  $ curl \
-      -X PUT \
-      -d '{"bar=baz"}' \
-      http://127.0.0.1:8500/v1/kv/api | jq '.'
-  $ curl \
-      http://127.0.0.1:8500/v1/kv/api | jq '.'
-
-To SSH into one of the Consul server nodes from the Bastion host, run the below command and it will use Consul DNS to lookup the address of one of the healthy Consul server nodes and SSH you in.
+Once on the Bastion host, you can use Consul's DNS functionality to seamlessly
+SSH into other Consul nodes if they exist.
 
   $ ssh -A ${module.consul_aws.consul_username}@consul.service.consul
 
-To force the generation of a new key, the private key instance can be "tainted" using the below command.
-
-  $ terraform taint -module=ssh_keypair_aws_override.tls_private_key tls_private_key.key
+${module.consul_aws.zREADME}
 README
 }
 
-output "vpc_cidr_block" {
-  value = "${module.network_aws.vpc_cidr_block}"
+output "vpc_cidr" {
+  value = "${module.network_aws.vpc_cidr}"
 }
 
 output "vpc_id" {
@@ -103,4 +99,20 @@ output "consul_asg_id" {
 
 output "consul_sg_id" {
   value = "${module.consul_aws.consul_sg_id}"
+}
+
+output "consul_lb_sg_id" {
+  value = "${module.consul_aws.consul_lb_sg_id}"
+}
+
+output "consul_tg_http_8500_arn" {
+  value = "${module.consul_aws.consul_tg_http_8500_arn}"
+}
+
+output "consul_tg_https_8080_arn" {
+  value = "${module.consul_aws.consul_tg_https_8080_arn}"
+}
+
+output "consul_lb_dns" {
+  value = "${module.consul_aws.consul_lb_dns}"
 }

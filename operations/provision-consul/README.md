@@ -19,7 +19,7 @@ The operator is responsible for producing the Consul cluster infrastructure and 
 
 ### Developer
 
-The developer will be consuming the Consul services and developing against it. This may be leveraging Consul for Service Discovery, Runtime Configuration, or Network Segmentation.
+The developer will be consuming the Consul services and developing against it. This may be leveraging Consul for Service Discovery, Service Configuration, or Service Segmentation.
 
 ### InfoSec
 

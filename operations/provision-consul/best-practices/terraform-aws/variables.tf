@@ -1,34 +1,67 @@
-# General
-variable "name"         { }
-variable "provider"     { default = "aws" }
-variable "local_ip_url" { default = "http://169.254.169.254/latest/meta-data/local-ipv4" }
+# ---------------------------------------------------------------------------------------------------------------------
+# General Variables
+# ---------------------------------------------------------------------------------------------------------------------
+variable "name"              { default = "consul-best-practices" }
+variable "common_name"       { default = "example.com" }
+variable "organization_name" { default = "Example Inc." }
+variable "provider"          { default = "aws" }
+variable "local_ip_url"      { default = "http://169.254.169.254/latest/meta-data/local-ipv4" }
+variable "download_certs"    { default = false }
 
-# Network module
-variable "vpc_cidr"                { }
-variable "vpc_cidrs_public"        { type = "list" }
-variable "nat_count"               { }
-variable "vpc_cidrs_private"       { type = "list" }
-variable "bastion_release_version" { }
-variable "bastion_consul_version"  { }
-variable "bastion_os"              { }
-variable "bastion_os_version"      { }
-variable "bastion_count"           { }
-variable "bastion_instance_type"   { }
+# ---------------------------------------------------------------------------------------------------------------------
+# Network Variables
+# ---------------------------------------------------------------------------------------------------------------------
+variable "vpc_cidr" { default = "10.139.0.0/16" }
 
-# Consul module
-variable "consul_release_version" { }
-variable "consul_version"         { }
-variable "consul_os"              { }
-variable "consul_os_version"      { }
-variable "consul_count"           { }
-variable "consul_instance_type"   { }
+variable "vpc_cidrs_public" {
+  type    = "list"
+  default = ["10.139.1.0/24", "10.139.2.0/24", "10.139.3.0/24",]
+}
+
+variable "vpc_cidrs_private" {
+  type    = "list"
+  default = ["10.139.11.0/24", "10.139.12.0/24", "10.139.13.0/24",]
+}
+
+variable "nat_count"              { default = 1 }
+variable "bastion_servers"        { default = 1 }
+variable "bastion_instance"       { default = "t2.small" }
+variable "bastion_release"        { default = "0.1.0" }
+variable "bastion_consul_version" { default = "1.0.6" }
+variable "bastion_os"             { default = "RHEL" }
+variable "bastion_os_version"     { default = "7.3" }
+variable "bastion_image_id"       { default = "" }
 
 variable "network_tags" {
   type    = "map"
   default = { }
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Consul Variables
+# ---------------------------------------------------------------------------------------------------------------------
+variable "consul_servers"    { default = -1 }
+variable "consul_instance"   { default = "t2.small" }
+variable "consul_release"    { default = "0.1.0" }
+variable "consul_version"    { default = "1.0.6" }
+variable "consul_os"         { default = "RHEL" }
+variable "consul_os_version" { default = "7.3" }
+variable "consul_image_id"   { default = "" }
+
+variable "consul_public" {
+  description = "If true, assign a public IP, open port 22 for public access, & provision into public subnets to provide easier accessibility without a Bastion host - DO NOT DO THIS IN PROD"
+  default     = false
+}
+
+variable "consul_server_config_override" { default = "" }
+variable "consul_client_config_override" { default = "" }
+
 variable "consul_tags" {
+  type    = "map"
+  default = { }
+}
+
+variable "consul_tags_list" {
   type    = "list"
   default = [ ]
 }
