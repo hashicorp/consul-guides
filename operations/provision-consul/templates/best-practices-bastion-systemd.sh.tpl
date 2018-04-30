@@ -81,4 +81,10 @@ ENVVARS
 
 sudo systemctl restart consul
 
+echo "Stop Vault"
+sudo systemctl stop vault
+
+echo "Stop Nomad"
+sudo systemctl stop nomad
+
 echo "[---best-practices-bastion-systemd.sh Complete---]"
