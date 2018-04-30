@@ -1,5 +1,5 @@
 module "ssh_keypair_aws" {
-  source = "github.com/hashicorp-modules/ssh-keypair-aws?ref=f-refactor"
+  source = "github.com/hashicorp-modules/ssh-keypair-aws"
 }
 
 data "aws_ami" "base" {
@@ -40,7 +40,7 @@ data "template_file" "consul_install" {
 }
 
 module "network_aws" {
-  source = "github.com/hashicorp-modules/network-aws?ref=f-refactor"
+  source = "github.com/hashicorp-modules/network-aws"
 
   name              = "${var.name}"
   vpc_cidr          = "${var.vpc_cidr}"
@@ -54,7 +54,7 @@ module "network_aws" {
 }
 
 module "consul_aws" {
-  source = "github.com/hashicorp-modules/consul-aws?ref=f-refactor"
+  source = "github.com/hashicorp-modules/consul-aws"
 
   name          = "${var.name}" # Must match network_aws module name for Consul Auto Join to work
   vpc_id        = "${module.network_aws.vpc_id}"
