@@ -17,7 +17,7 @@ By default, the Consul agent will capture requests made to domains ending with "
 The agent will send this query to the Consul Servers, which will look for a healthy instance based on the domain informed (in this case "query" and "db"). Additional information on how to use Consul DNS and available options can be found here: https://www.consul.io/docs/agent/dns.html
 
 This diagram represents the communication:
-![alt text][ConsulDiscovery]
+![alt text](assets/ConsulDiscovery.jpg "Consul Service Discovery Workflow")
 
 ### Consul Health Check Workflow
 Consul agents are responsible for tracking the health of a service, locally. If there is a state change (for example the service becomes unavailable), the agent notifies the server of the new state.
@@ -27,7 +27,7 @@ To ensure the agent themselves are running, Consul has liveliness checks, which 
 1. An agent tries to reach another using an UDP call
 2. Should this call fail, the agent asks other. agents to issue an UDP call, and it sends a TCP call.
 3. If these calls fails because the target agent is down, the original agent gets notified and sends a notification to the cluster of the new unhealthy state.
-![alt text][ConsulLiveliness]
+![alt text](assets/ConsulLiveliness.jpg "Consul Liveliness Check workflow")
 
 #### Failure Detection
 In order to avoid false positives, Consul has anti-entropy checks that places potentially unhealthy nodes in a "suspect" category, requiring validation from multiple nodes prior to assigning a unhealthy state.
@@ -38,7 +38,7 @@ Consul uses Serf protocol for service discovery and orchestration, and raft to a
 #### Serf
 Consul has its roots on the SWIM (Scaleable Weakly-consistent Infection-type process-group Membership) Protocol, which was published in an academic paper describing a protocol for distributed communications. The Serf library was created as an implementation of this protocol, and Consul is built on top of Serf. 
 
-In a nutshell, the protocol implementation provides small, constant network load that scales well, allowing fast propagation and convergence. A presentation of Consul running in massive scale can be found here [ConsulScale].
+In a nutshell, the protocol implementation provides small, constant network load that scales well, allowing fast propagation and convergence. A presentation of Consul running in massive scale can be found here https://youtu.be/CDQaqiRhTtk.
 #### raft
 raft is a Go library that manages a replicated log and can be used with an FSM to manage replicated state machines. It is a library for providing consensus.
 
@@ -116,7 +116,7 @@ server_ips = [
 - Go to the consul UI in http://IP1:8500 
 - Validate all services healthy
 - Open GCP Console and go to the Compute Engine screen:
-![alt text][GCPInstances]
+![alt text](assets/Instances.jpg "GCP Console showing instances")
 - Click on "SSH" button of "client-east-web-1" to connect to the web instance using the browser
 - Execute:
 ```
@@ -150,7 +150,7 @@ db.service.consul.      0       IN      A       10.142.0.6
 sudo service mongodb stop
 ```
 - Now if you check the Consul UI, you will see the following:
-![alt text][ConsulUIFail]
+![alt text](assets/ConsulDBFailing.jpg "Consul UI with failed service")
 - And if you SSH back into the web instance and execute again:
 ```
  dig @127.0.0.1 -p 8600 db.query.consul
@@ -230,10 +230,4 @@ pwd
 
 terraform destroy
 ```
-
-[ConsulScale](https://youtu.be/CDQaqiRhTtk)
-[GCPInstances]: assets/Instances.jpg "GCP Console showing instances"
-[ConsulDiscovery]: assets/ConsulDiscovery.jpg "Consul Service Discovery Workflow"
-[ConsulLiveliness]: assets/ConsulLiveliness.jpg "Consul Liveliness Check workflow"
-[ConsulUIFail]: assets/ConsulDBFailing.jpg "Consul UI with failed service"
 
