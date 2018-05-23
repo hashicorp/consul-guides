@@ -4,6 +4,7 @@ Consul's most common use case is as a service discovery tool. However what happe
 In this guide we will show how to configure Consul using prepared queries, which allows service discovery to happen across datacenters, in a way that is transparent to the caller - an app can continue calling name.service.consul, and it will be automatically redirected to a healthy instance in a different datacenter should the local versions be unhealthy.
 
 As a note, this guide uses Puppet and Packer to create images for the services available in the Consul cluster. These can be used as reference for the workflow, but discussion of Puppet and Packer is outside the scope of this guide, therefore the functionalities are automated using bash script.
+
 ---
 ## Reference Material
 Before going into the guide, it is beneficial to understand a few concepts related to Consul:
@@ -54,6 +55,7 @@ The health checks done locally by the consul agents are defined through configur
 
 ### Consul Use Cases
 This guide will focus on Consul for Service Discovery and Prepared Queries. Additional uses for Consul include Runtime Configuration and Orchestration, and Advanced Networking. <links to other guides here> 
+
 --- 
 ## Estimated Time to Complete
 60 minutes
