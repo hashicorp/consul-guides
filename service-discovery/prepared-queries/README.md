@@ -27,6 +27,7 @@ To ensure the agent themselves are running, Consul has liveliness checks, which 
 1. An agent tries to reach another using an UDP call
 2. Should this call fail, the agent asks other. agents to issue an UDP call, and it sends a TCP call.
 3. If these calls fails because the target agent is down, the original agent gets notified and sends a notification to the cluster of the new unhealthy state.
+
 ![alt text](assets/ConsulLiveliness.jpg "Consul Liveliness Check workflow")
 
 #### Failure Detection
@@ -115,6 +116,7 @@ server_ips = [
 ### Step 3: Validate Consul Cluster
 - Go to the consul UI in http://IP1:8500 
 - Validate all services healthy
+![alt text](assets/Instances.jpg "GCP Console showing instances")
 - Open GCP Console and go to the Compute Engine screen:
 ![alt text](assets/Instances.jpg "GCP Console showing instances")
 - Click on "SSH" button of "client-east-web-1" to connect to the web instance using the browser
