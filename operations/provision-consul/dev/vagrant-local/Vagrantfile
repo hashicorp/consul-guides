@@ -3,12 +3,12 @@
 
 # Networking
 private_ip = ENV['PRIVATE_IP'] || "192.168.50.151"
-consul_host_port = ENV['CONSUL_HOST_PORT'] || 8500
 
 # Base box selection
 base_box = ENV['BASE_BOX'] || "bento/ubuntu-16.04"
 
 # Consul variables
+consul_host_port = ENV['CONSUL_HOST_PORT'] || 8500
 consul_version = ENV['CONSUL_VERSION'] || "1.0.6"
 consul_ent_url = ENV['CONSUL_ENT_URL']
 consul_group = "consul"
@@ -16,17 +16,12 @@ consul_user = "consul"
 consul_comment = "Consul"
 consul_home = "/srv/consul"
 
-# Tests & cleanup
-run_tests = ENV['RUN_TESTS']
-cleanup = ENV['CLEANUP']
-
 Vagrant.configure("2") do |config|
   # Use vagrant insecure public key, comment this out to restrict access
   config.ssh.insert_key = false
 
   # Setup networking
   config.vm.network :private_network, ip: private_ip
-  config.vm.network :forwarded_port, guest: 8500, host: consul_host_port, auto_correct: true
   config.vm.network "private_network", type: "dhcp"
 
   # Use base_box set at the top of this file
@@ -35,6 +30,9 @@ Vagrant.configure("2") do |config|
 
   # Bootstrap the vm
   config.vm.provision "shell", inline: "curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/shared/scripts/base.sh | bash"
+
+  # Forward Consul port
+  config.vm.network :forwarded_port, guest: 8500, host: consul_host_port, auto_correct: true
 
   # Setup Consul user
   config.vm.provision "shell", inline: "curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/shared/scripts/setup-user.sh | bash",
@@ -55,19 +53,6 @@ Vagrant.configure("2") do |config|
     }
 
   config.vm.provision "shell", inline: "curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/consul/scripts/install-consul-systemd.sh | bash"
-
-  # Setup tests
-  config.vm.provision "shell", inline: "curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/shared/scripts/setup-testing.sh | bash"
-
-  # Run tests if `RUN_TESTS` env var is provided
-  if (run_tests)
-    config.vm.provision "shell", inline: "cd /tmp && rake consul:spec"
-  end
-
-  # Cleanup if `CLEANUP` env var is provided
-  if (cleanup)
-    config.vm.provision "shell", inline: "curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/shared/scripts/cleanup.sh | bash"
-  end
 
   # Increase memory for Parallels Desktop
   config.vm.provider "parallels" do |p, o|
@@ -93,7 +78,8 @@ To SSH into the Consul host, run the below command.
 
   $ vagrant ssh
 
-You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html) or API (https://www.consul.io/api/index.html) commands.
+You can now interact with Consul using any of the CLI (https://www.consul.io/docs/commands/index.html)
+or API (https://www.consul.io/api/index.html) commands.
 
   # Use the CLI to retrieve the Consul members, write a key/value, and read that key/value
   $ consul members
@@ -102,10 +88,10 @@ You can now interact with Consul using any of the CLI (https://www.consul.io/doc
 
   # Use the API to retrieve the Consul members, write a key/value, and read that key/value
   $ curl http://127.0.0.1:8500/v1/agent/members | jq '.'
-  $ curl -X PUT -d '{\"bar=baz\"}' http://127.0.0.1:8500/v1/kv/api | jq '.'
+  $ curl -X PUT -d 'bar=baz' http://127.0.0.1:8500/v1/kv/api | jq '.'
   $ curl http://127.0.0.1:8500/v1/kv/api | jq '.'
 
-Visit the Consul UI: http://#{private_ip}:#{consul_host_port}/
+Visit the Consul UI: http://#{private_ip}:#{consul_host_port}
 
 Don't forget to tear your VM down after.
 
