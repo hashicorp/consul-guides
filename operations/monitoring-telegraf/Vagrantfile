@@ -1,0 +1,71 @@
+# coding: utf-8
+
+Vagrant.require_version ">= 2.0.0"
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "bento/ubuntu-16.04"
+
+  config.vm.define "statsbox", autostart: true do |statsbox|
+
+    statsbox.vm.provider "virtualbox" do |vb|
+      vb.linked_clone = true
+      vb.memory = "1024"
+    end
+
+    statsbox.vm.provider "vmware_desktop" do |vmd|
+      vmd.linked_clone    = true
+      vmd.vmx["memsize"]  = "1024"
+    end
+
+    statsbox.vm.hostname = "statsbox"
+    statsbox.vm.network "private_network", ip: "10.13.37.40"
+    statsbox.vm.network "forwarded_port", guest: 3000, host: 3000 # Graphite UI
+    statsbox.vm.network "forwarded_port", guest: 8086, host: 8086 # InfluxDB
+    statsbox.vm.network "forwarded_port", guest: 8888, host: 8888 # Chronograf
+    statsbox.vm.network "forwarded_port", guest: 9092, host: 9092 # Kapacitor
+
+    statsbox.vm.provision "hosts", autoconfigure: true, sync_hosts: true
+    statsbox.vm.provision "shell", path: "statsbox/statsbox.sh"
+  end
+
+  %w(consul0 consul1 consul2 vault0).each_with_index do |nodename, consul_index|
+
+    config.vm.define "#{nodename}", autostart: true do |thisnode|
+
+      thisnode.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = "512"
+      end
+
+      thisnode.vm.provider "vmware_desktop" do |vmd|
+        vmd.linked_clone    = true
+        vmd.vmx["memsize"]  = "512"
+      end
+
+      thisnode.vm.hostname = "#{nodename}"
+
+      thisnode.vm.network "private_network", ip: "10.13.37.#{50 + consul_index}"
+
+      thisnode.vm.provision "hosts", autoconfigure: true, sync_hosts: true
+
+      case nodename
+      when "consul0"
+        # Consul Server + UI
+        thisnode.vm.provision "shell", path: "consul/consul-server.sh"
+        thisnode.vm.network "forwarded_port", guest: 8500, host: 8500 # Consul UI
+      when "consul1","consul2"
+        # Consul Server
+        thisnode.vm.provision "shell", path: "consul/consul-server.sh"
+      when "vault0"
+        # Vault plus Consul Client
+        thisnode.vm.network "forwarded_port", guest: 8200, host: 8200 # Vault UI
+        thisnode.vm.provision "shell", path: "vault/databases.sh"
+        thisnode.vm.provision "shell", path: "vault/vault-server.sh"
+        thisnode.vm.provision "shell", path: "consul/consul-client.sh"
+      end
+
+    end
+  end
+
+end

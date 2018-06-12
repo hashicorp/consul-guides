@@ -1,0 +1,10 @@
+datasources:
+  - name: influxdb
+    type: influxdb
+    access: proxy
+    url: http://localhost:8086
+    database: telegraf
+    user: telegraf
+    password: telegraf
+    is_default: true
+    editable: true
