@@ -1,16 +1,16 @@
----
-- Website: https://consul.io
-- GitHub repository: [https://github.com/hashicorp/consul-guides](https://github.com/hashicorp/consul-guides)
-- [Gitter](http://gitter.im) [hashicorp-consul](https://gitter.im/hashicorp-consul/Lobby)
-- Announcement list: [Google Groups hashicorp-announce](https://groups.google.com/group/hashicorp-announce)
-- Discussion list: [Google Groups consul-tool](https://groups.google.com/group/consul-tool)
-- Discussion list: [Google Groups](https://groups.google.com/group/vault-tool)
+----
+-	Website: https://consul.io
+-	GitHub repository: [https://github.com/hashicorp/consul-guides](https://github.com/hashicorp/consul-guides)
+-	[Gitter](http://gitter.im) [hashicorp-consul](https://gitter.im/hashicorp-consul/Lobby)
+-	Announcement list: [Google Groups hashicorp-announce](https://groups.google.com/group/hashicorp-announce)
+-	Discussion list: [Google Groups consul-tool](https://groups.google.com/group/consul-tool)
+-	Discussion list: [Google Groups](https://groups.google.com/group/vault-tool)
 
----
 
 <img src="common/images/Consul_VerticalLogo_FullColor.r1x9c1CS6x.svg" width="15%">
 
 ----
+
 # Consul Guides
 
 This repository aims to assist individuals in learning how to install, configure, and administer HashiCorp Consul.
@@ -45,6 +45,12 @@ None yet, check back soon or feel free to [contribute](CONTRIBUTING.md)!
 ## Assets
 
 This directory contains graphics and other material for the repository.
+
+## `gitignore.tf` Files
+
+You may notice some [`gitignore.tf`](operations/provision-consul/best-practices/terraform-aws/gitignore.tf) files in certain directories. `.tf` files that contain the word "gitignore" are ignored by git in the [`.gitignore`](./.gitignore) file.
+
+If you have local Terraform configuration that you want ignored (like Terraform backend configuration), create a new file in the directory (separate from `gitignore.tf`) that contains the word "gitignore" (e.g. `backend.gitignore.tf`) and it won't be picked up as a change.
 
 ## Contributing
 
