@@ -50,4 +50,7 @@ PROFILE
 echo "Restart Consul"
 sudo systemctl restart consul
 
+echo "Install Wetty"
+sudo curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/shared/scripts/web-terminal.sh | bash
+
 echo "[---quick-start-bastion-systemd.sh Complete---]"

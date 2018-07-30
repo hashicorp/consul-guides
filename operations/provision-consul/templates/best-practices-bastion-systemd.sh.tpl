@@ -81,10 +81,7 @@ ENVVARS
 
 sudo systemctl restart consul
 
-echo "Stop Vault"
-sudo systemctl stop vault
-
-echo "Stop Nomad"
-sudo systemctl stop nomad
+echo "Install Wetty"
+sudo curl https://raw.githubusercontent.com/hashicorp/guides-configuration/master/shared/scripts/web-terminal.sh | bash
 
 echo "[---best-practices-bastion-systemd.sh Complete---]"
