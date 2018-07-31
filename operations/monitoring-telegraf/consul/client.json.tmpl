@@ -1,0 +1,14 @@
+{
+  "bind_addr": "@@BIND_ADDR@@",
+  "data_dir": "/data/consul",
+  "ui": false,
+  "retry_join": [
+    "consul0",
+    "consul1",
+    "consul2"
+  ],
+  "telemetry": {
+    "dogstatsd_addr": "localhost:8125",
+    "disable_hostname": true
+  }
+}
