@@ -6,17 +6,35 @@ successfully provisioned!
 
 ${module.network_aws.zREADME}
 # ------------------------------------------------------------------------------
-# Local HTTP API Requests
+# External Cluster Access
 # ------------------------------------------------------------------------------
 
-If you're making HTTP API requests outside the Bastion (locally), set
-the below env vars.
+If you'd like to interact with your cluster externally, use one of the below
+options.
 
-The `consul_public` variable must be set to true for requests to work.
+The `consul_public` variable must be set to true for any of these options to work.
 
 `consul_public`: ${var.consul_public}
 
-  $ export CONSUL_ADDR=http://${module.consul_aws.consul_lb_dns}:8500
+Below are the list of CIDRs that are whitelisted to have external access. This
+list is populated from the "public_cidrs" variable merged with the external cidr
+of the local workstation running Terraform for ease of use. If your CIDR does not
+appear in the list, you can find it by googling "What is my ip" and add it to the
+"public_cidrs" Terraform variable.
+
+`public_cidrs`:
+  ${join("\n  ", compact(concat(list(local.workstation_external_cidr), var.public_cidrs)))}
+
+1.) Use Wetty (Web + tty), a web terminal for the cluster over HTTP and HTTPS
+
+  ${join("\n  ", formatlist("Wetty Url: http://%s:3030/wetty", module.network_aws.bastion_ips_public))}
+  Wetty Username: wetty-${var.name}
+  Wetty Password: ${element(concat(random_string.wetty_password.*.result, list("")), 0)}
+
+2.) Set the below env var(s) and use Consul's CLI or HTTP API
+
+  ${format("$ export CONSUL_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
+  ${format("$ export CONSUL_HTTP_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
 
 # ------------------------------------------------------------------------------
 # Consul Quick Start

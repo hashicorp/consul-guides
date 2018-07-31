@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # General Variables
 # ---------------------------------------------------------------------------------------------------------------------
+# create         = true
 # name           = "consul-best-practices"
 # download_certs = true
 
@@ -33,9 +34,15 @@
 # consul_os_version = "7.3" # OS Version (e.g. 7.3 for RHEL, 16.04 for Ubuntu)
 # consul_image_id   = "" # AMI ID override, defaults to base RHEL AMI
 
-# If 'consul_public' is true, assign a public IP, open port 22 for public access, & provision into
-# public subnets to provide easier accessibility without a Bastion host - DO NOT DO THIS IN PROD
+# If 'consul_public' is true, assign a public IP, open port 22 for public access,
+# & provision into public subnets to provide easier accessibility from the below
+# 'public_cidrs' without going through a Bastion host - DO NOT DO THIS IN PROD
 # consul_public = true
+
+# CIDRs to be given external access if 'consul_public' is true; Terraform will
+# automatically add the CIDR of the machine it is being run on to this list, or
+# you can alternatively discover your IP by googling "what is my ip"
+# public_cidrs = ["0.0.0.0/0",] # Open cluster to the public internet (NOT ADVISED!)
 
 # consul_server_config_override = <<EOF
 # {

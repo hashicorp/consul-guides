@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # General Variables
 # ---------------------------------------------------------------------------------------------------------------------
+# create    = true
 # name      = "consul-quick-start"
 # ami_owner = "099720109477" # Base image owner, defaults to RHEL
 # ami_name  = "*ubuntu-xenial-16.04-amd64-server-*" # Base image name, defaults to RHEL
@@ -28,9 +29,15 @@
 # consul_url      = "" # Consul Enterprise download URL for runtime install, defaults to Consul OSS
 # consul_image_id = "" # AMI ID override, defaults to base RHEL AMI
 
-# If 'consul_public' is true, assign a public IP, open port 22 for public access, & provision into
-# public subnets to provide easier accessibility without a Bastion host - DO NOT DO THIS IN PROD
-# consul_public = true
+# If 'consul_public' is true, assign a public IP, open port 22 for public access,
+# & provision into public subnets to provide easier accessibility from the below
+# 'public_cidrs' without going through a Bastion host - DO NOT DO THIS IN PROD
+# consul_public = false
+
+# CIDRs to be given external access if 'consul_public' is true; Terraform will
+# automatically add the CIDR of the machine it is being run on to this list, or
+# you can alternatively discover your IP by googling "what is my ip"
+# public_cidrs = ["0.0.0.0/0",] # Open cluster to the public internet (NOT ADVISED!)
 
 # consul_server_config_override = <<EOF
 # {

@@ -11,23 +11,45 @@ using the below command.
       tls_private_key.key
 ${var.download_certs ?
 "\n${module.root_tls_self_signed_ca.zREADME}
-${module.leaf_tls_self_signed_cert.zREADME}
+${module.leaf_tls_self_signed_cert.zREADME}" : ""}
 # ------------------------------------------------------------------------------
-# Local HTTP API Requests
+# External Cluster Access
 # ------------------------------------------------------------------------------
 
-If you're making HTTPS API requests outside the Bastion (locally), set
-the below env vars.
+If you'd like to interact with your cluster externally, use one of the below
+options.
 
-The `consul_public` variable must be set to true for requests to work.
+The `consul_public` variable must be set to true for any of these options to work.
 
 `consul_public`: ${var.consul_public}
 
-  $ export CONSUL_ADDR=https://${module.consul_aws.consul_lb_dns}:8080 # HTTPS
-  $ export CONSUL_ADDR=http://${module.consul_aws.consul_lb_dns}:8500 # HTTP
+Below are the list of CIDRs that are whitelisted to have external access. This
+list is populated from the 'public_cidrs' variable merged with the external cidr
+of the local workstation running Terraform for ease of use. If your CIDR does not
+appear in the list, you can find it by googling "What is my ip" and add it to the
+'public_cidrs' Terraform variable.
+
+`public_cidrs`:
+  ${join("\n  ", compact(concat(list(local.workstation_external_cidr), var.public_cidrs)))}
+
+1.) Use Wetty (Web + tty), a web terminal for the Bastion over HTTP and HTTPS
+
+  ${join("\n  ", formatlist("Wetty Url: https://%s:3030/wetty", module.network_aws.bastion_ips_public))}
+  Wetty Username: wetty-${var.name}
+  Wetty Password: ${element(concat(random_string.wetty_password.*.result, list("")), 0)}
+
+2.) Set the below env var(s) and use Consul's CLI or HTTPS API
+
+Ensure you have the certs locally by setting 'download_certs' to true.
+
+  $ export CONSUL_HTTP_SSL=true
+  $ export CONSUL_HTTP_SSL_VERIFY=false
+  ${format("$ export CONSUL_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
+  ${format("$ export CONSUL_HTTP_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
   $ export CONSUL_CACERT=./${module.leaf_tls_self_signed_cert.ca_cert_filename}
   $ export CONSUL_CLIENT_CERT=./${module.leaf_tls_self_signed_cert.leaf_cert_filename}
-  $ export CONSUL_CLIENT_KEY=./${module.leaf_tls_self_signed_cert.leaf_private_key_filename}\n" : ""}
+  $ export CONSUL_CLIENT_KEY=./${module.leaf_tls_self_signed_cert.leaf_private_key_filename}
+
 # ------------------------------------------------------------------------------
 # Consul Best Practices
 # ------------------------------------------------------------------------------
