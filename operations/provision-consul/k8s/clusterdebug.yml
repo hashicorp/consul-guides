@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: clusterdebug
+spec:
+  restartPolicy: Never
+  containers:
+    - name: clusterdebug
+      image: nrvale0/clusterdebug:latest # large but useful-for-debugging image
+      imagePullPolicy: Always
+      command: [ "/bin/sh", "-c" ]
+      args:
+      - http get http://${K8S_HOST_IP}:8500/v1/status/peers --verbose
+      env:
+        - name: K8S_HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP # get the node IP/Consul client IP from the Downward API

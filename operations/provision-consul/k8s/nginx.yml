@@ -1,0 +1,101 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: consul-reg
+data:
+
+  regjson: |-
+    {
+      "Name": "nginx",
+      "Address": "{{K8S_POD_IP}}",
+      "Port": 80
+    }
+
+  dockerrun: |-
+    #!/bin/bash
+
+    set -u
+
+    function hl() {
+      printf "\n\n%s\n\n" '--------------------------------------------------------------------------------'
+    }
+
+    echo "Our Pod IP is ${K8S_POD_IP}..."
+    cat /tmp/templates/reg.json.template | sed -e "s/{{K8S_POD_IP}}/${K8S_POD_IP}/g" > /tmp/consul/reg.json
+    hl
+
+    echo "Register the service..."
+    (set -x; http --verbose put "http://${K8S_HOST_IP}:8500/v1/agent/service/register" < /tmp/consul/reg.json)
+    hl
+
+    echo "Check that the nginx service exists in the catalog..."
+    (set -x; http --verbose get "http://${K8S_HOST_IP}:8500/v1/catalog/services")
+    hl
+
+    echo "Finally, check that our service contains the node..."
+    (set -x; http --json get "http://${K8S_HOST_IP}:8500/v1/catalog/service/nginx" | jq .[].ServiceAddress)
+    hl
+
+    sleep infinity # sleep forever in case we wan to kubectl exec into this container...
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  restartPolicy: Never
+  containers:
+
+    - name: nginx
+      image: nginx:latest
+
+      volumeMounts:
+      - name: consul-reg-templates
+        mountPath: /tmp/templates
+      - name: consul-reg
+        mountPath: /tmp/consul
+      - name: dockerrun
+        mountPath: /tmp/docker-run
+
+    - name: consul-registration
+      image: nrvale0/clusterdebug
+      imagePullPolicy: Always
+      env:
+        - name: K8S_HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP # get the node IP/Consul client IP from the Downward API
+        - name: K8S_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP # get the pod IP the Downward API
+
+      volumeMounts:
+      - name: consul-reg-templates
+        mountPath: /tmp/templates
+      - name: consul-reg
+        mountPath: /tmp/consul
+      - name: dockerrun
+        mountPath: /tmp/docker-run
+
+      command: [ "/bin/bash", "-c" ]
+      args: [ "cp /tmp/templates/docker-run.sh /tmp/docker-run/docker-run.sh && chmod +x /tmp/docker-run/docker-run.sh && stdbuf -i0 -o0 -e0 /tmp/docker-run/docker-run.sh" ]
+
+  volumes:
+
+  - name: consul-reg-templates
+    configMap:
+      name: consul-reg
+      items:
+        - key: regjson
+          path: reg.json.template
+        - key: dockerrun
+          path: docker-run.sh
+
+  - name: consul-reg
+    emptyDir: {}
+
+  - name: dockerrun
+    emptyDir: {}
