@@ -1,0 +1,23 @@
+{
+  "service": {
+    "name": "clientms",
+    "port": 5000,
+    "check": {
+      "id": "clientms",
+      "name": "clientms tcp check",
+      "tcp": "localhost:5000",
+      "interval": "10s",
+      "timeout": "1s"
+    },
+    "connect": {
+      "proxy": {
+        "config": {
+          "upstreams": [{
+            "destination_name": "redis",
+            "local_bind_port": 6400
+          }]
+        }
+      }
+    }
+  }
+}

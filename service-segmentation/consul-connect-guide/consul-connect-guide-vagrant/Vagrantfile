@@ -1,0 +1,120 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$script = <<SCRIPT
+echo "Installing dependencies ..."
+sudo apt-get update
+sudo apt-get install -y unzip curl jq dnsutils
+echo "Fetching Consul version ${CONSUL_DEMO_VERSION} ..."
+cd /tmp/
+curl -s https://releases.hashicorp.com/consul/${CONSUL_DEMO_VERSION}/consul_${CONSUL_DEMO_VERSION}_linux_amd64.zip -o consul.zip
+echo "Installing Consul version ${CONSUL_DEMO_VERSION} ..."
+unzip consul.zip
+sudo chmod +x consul
+sudo mv consul /usr/bin/consul
+sudo mkdir /etc/consul.d
+sudo chmod a+w /etc/consul.d
+
+echo "Installing Docker ..."
+sudo apt-get update -y
+sudo apt-get install -y \
+     apt-transport-https \
+     ca-certificates \
+     curl \
+     git \
+     gnupg2 \
+     software-properties-common
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+sudo apt-get update -y
+sudo apt-get install -y docker-ce
+sudo usermod -a -G docker vagrant
+sudo systemctl enable docker
+sudo service docker start
+
+cat << EOF > /etc/systemd/system/consul.service
+[Unit]
+Description=consul agent
+Requires=network-online.target
+After=network-online.target
+[Service]
+Restart=always
+RestartSec=15s
+User=vagrant
+Group=vagrant
+ExecStart=/usr/bin/consul agent -config-dir=/etc/consul.d
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+[Install]
+WantedBy=multi-user.target
+EOF
+
+SCRIPT
+
+$n1 = <<N1
+cp /vagrant/consul/consul_n1.json /etc/consul.d/consul.json
+cp /vagrant/consul/clientms.json /etc/consul.d/clientms.json
+systemctl enable consul.service
+service consul start
+N1
+
+$n2 = <<N2
+cp /vagrant/consul/consul_n2.json /etc/consul.d/consul.json
+cp /vagrant/consul/redis.json /etc/consul.d/redis.json
+systemctl enable consul.service
+service consul start
+N2
+
+# Specify a Consul version
+CONSUL_DEMO_VERSION = ENV['CONSUL_DEMO_VERSION'] || "1.2.2"
+
+# Specify a custom Vagrant box for the demo
+DEMO_BOX_NAME = ENV['DEMO_BOX_NAME'] || "bento/debian-9.5"
+
+# Vagrantfile API/syntax version.
+# NB: Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = DEMO_BOX_NAME
+
+  config.vm.provider "virtualbox" do |vb|
+     vb.memory = "256"
+  end
+
+  config.vm.provision "shell",
+                          inline: $script,
+                          env: {'CONSUL_DEMO_VERSION' => CONSUL_DEMO_VERSION}
+
+  config.vm.define "n1" do |n1|
+      n1.vm.hostname = "n1"
+      n1.vm.network "private_network", ip: "172.20.20.10"
+      n1.vm.network "forwarded_port", guest: 5000, host: 5000
+      n1.vm.network "forwarded_port", guest: 8500, host: 8500
+      n1.vm.provision "shell", inline: $n1
+      n1.vm.provision "docker" do |d|
+        d.build_image "/vagrant/clientms",
+        args: "-t python-clientms"
+        d.run "python-clientms",
+        args: "--name clientms --net=host -d -e REDIS_HOST=localhost -e REDIS_PORT=6400 -p 5000:5000"
+      end
+      n1.vm.provision "shell", inline: "sudo docker restart clientms", run: "always"
+  end
+
+  config.vm.define "n2" do |n2|
+      n2.vm.hostname = "n2"
+      n2.vm.network "private_network", ip: "172.20.20.11"
+      n2.vm.network "forwarded_port", guest: 6379, host: 6379
+      n2.vm.provision "shell", inline: $n2
+      n2.vm.provision "docker" do |d|
+        d.run "redis",
+        args: "--name redis -p 6379:6379 -d"
+      end
+      n2.vm.provision "shell", inline: "sudo docker restart redis", run: "always"
+  end
+
+end
