@@ -1,4 +1,4 @@
-## Consul Connect guide - AWS EC2 instances
+### Consul Connect guide for Python to Redis - AWS EC2 instances
 
 This guide consists of a python client microservice called `clientms`, connecting to an upstream `redis` service. We will instantiate both services to demonstrate the Consul Connect managed proxy. The steps outlined below are applicable to a 2 node Consul cluster running on Amazon AWS EC2 instances. The client and server microservices will be instantiated on different VMs.
 

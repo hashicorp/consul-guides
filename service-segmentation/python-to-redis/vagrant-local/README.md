@@ -1,4 +1,4 @@
-## Consul Connect guide - local VMs (Vagrant)
+### Consul Connect guide for Python to Redis - Vagrant local VMs
 
 This guide consists of a python client micro-service called `clientms`, connecting to an upstream `redis` service. We will instantiate both services to demonstrate the Consul connect proxy. The steps outlined below are applicable to a 2 node Consul cluster running on Vagrant VMs. The client and server services will be instantiated on different VMs.
 
