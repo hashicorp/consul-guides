@@ -1,0 +1,15 @@
+{
+  "datacenter": "local-dc1",
+  "data_dir": "/tmp/consul",
+  "log_level": "DEBUG",
+  "node_name": "n1",
+  "server": true,
+  "bootstrap_expect": 1,
+  "enable_script_checks": true,
+  "bind_addr": "172.20.20.10",
+  "client_addr": "0.0.0.0",
+  "connect": {
+    "enabled": true
+  },
+  "ui": true
+}

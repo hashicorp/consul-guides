@@ -40,7 +40,7 @@ None yet, check back soon or feel free to [contribute](CONTRIBUTING.md)!
 
 ## Service Segementation Guides
 
-None yet, check back soon or feel free to [contribute](CONTRIBUTING.md)!
+This area contains examples of securing service-to-service communication using [Consul Connect](https://www.consul.io/docs/connect/index.html).
 
 ## Assets
 

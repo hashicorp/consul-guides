@@ -1,0 +1,14 @@
+{
+  "service": {
+    "name": "redis",
+    "port": 6379,
+    "check": {
+      "id": "redis",
+      "name": "redis tcp check",
+      "tcp": "localhost:6379",
+      "interval": "10s",
+      "timeout": "1s"
+    },
+    "connect": { "proxy": {} }
+  }
+}
