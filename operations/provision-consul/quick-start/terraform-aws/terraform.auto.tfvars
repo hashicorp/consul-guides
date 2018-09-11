@@ -13,6 +13,11 @@
 # vpc_cidrs_public  = ["172.19.0.0/20", "172.19.16.0/20", "172.19.32.0/20",]
 # vpc_cidrs_private = ["172.19.48.0/20", "172.19.64.0/20", "172.19.80.0/20",]
 
+# CIDRs to be given external access if the '*_public' variable is true; Terraform will
+# automatically add the CIDR of the machine it is being run on to this list, or
+# you can alternatively discover your IP by googling "what is my ip"
+# public_cidrs = ["",] # Close cluster LBs off to the public internet
+
 # nat_count        = 1 # Number of NAT gateways to provision across public subnets, defaults to public subnet count.
 # bastion_servers  = 0 # Number of bastion hosts to provision across public subnets, defaults to public subnet count.
 # bastion_instance = "t2.micro"
@@ -30,14 +35,9 @@
 # consul_image_id = "" # AMI ID override, defaults to base RHEL AMI
 
 # If 'consul_public' is true, assign a public IP, open port 22 for public access,
-# & provision into public subnets to provide easier accessibility from the below
+# & provision into public subnets to provide easier accessibility from the
 # 'public_cidrs' without going through a Bastion host - DO NOT DO THIS IN PROD
 # consul_public = false
-
-# CIDRs to be given external access if 'consul_public' is true; Terraform will
-# automatically add the CIDR of the machine it is being run on to this list, or
-# you can alternatively discover your IP by googling "what is my ip"
-# public_cidrs = ["0.0.0.0/0",] # Open cluster to the public internet (NOT ADVISED!)
 
 # consul_server_config_override = <<EOF
 # {

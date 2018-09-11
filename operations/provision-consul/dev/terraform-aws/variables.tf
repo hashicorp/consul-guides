@@ -23,8 +23,15 @@ variable "vpc_cidrs_private" {
   default = ["10.139.11.0/24", "10.139.12.0/24",]
 }
 
+variable "public_cidrs" {
+  description = "Optional list of public cidrs to set on resources when the \"*_public\" variable is `true`, defaults to public internet 0.0.0.0/0"
+  type        = "list"
+  default     = ["0.0.0.0/0"]
+}
+
 variable "nat_count"        { default = 1 }
 variable "bastion_servers"  { default = 0 }
+variable "bastion_instance" { default = "t2.micro" }
 variable "bastion_image_id" { default = "" }
 
 variable "network_tags" {
@@ -44,12 +51,6 @@ variable "consul_image_id" { default = "" }
 variable "consul_public" {
   description = "Assign a public IP, open port 22 for public access, & provision into public subnets to provide easier accessibility without a Bastion host - DO NOT DO THIS IN PROD"
   default     = true
-}
-
-variable "public_cidrs" {
-  description = "Optional list of public cidrs to set on resources when the \"consul_public\" variable is `true`, defaults to the local workstation IP."
-  type        = "list"
-  default     = []
 }
 
 variable "consul_config_override" { default = "" }

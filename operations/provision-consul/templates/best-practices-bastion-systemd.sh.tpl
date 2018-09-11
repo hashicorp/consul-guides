@@ -55,7 +55,8 @@ cat <<CONFIG | sudo tee $CONSUL_CONFIG_DIR/default.json
   },
   "addresses": {
     "https": "0.0.0.0"
-  }
+  },
+  "service": {"name": "consul", "tags": ["client"], "port": 8080}
 }
 CONFIG
 

@@ -18,7 +18,8 @@ To force the generation of a new key, the private key instance can be
 If you'd like to interact with your cluster externally, use one of the below
 options.
 
-The `consul_public` variable must be set to true for any of these options to work.
+The `consul_public` variable must be set to true to access the cluster outside
+of the bastion host.
 
 `consul_public`: ${var.consul_public}
 
@@ -33,25 +34,22 @@ appear in the list, you can find it by googling "What is my ip" and add it to th
 
 1.) Use Wetty (Web + tty), a web terminal for the cluster over HTTP and HTTPS
 
-  Wetty Url: ${format("http://%s:3030/wetty", "PUBLIC_IP")}
+  Wetty Url: ${format("http://%s:3030/wetty", module.consul_aws.consul_app_lb_dns)}
   Wetty Username: wetty-${var.name}
   Wetty Password: ${element(concat(random_string.wetty_password.*.result, list("")), 0)}
 
 2.) Set the below env var(s) and use Consul's CLI or HTTP API
 
-  ${format("$ export CONSUL_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
-  ${format("$ export CONSUL_HTTP_ADDR=http://%s:8500", module.consul_aws.consul_lb_dns)}
+  ${format("export CONSUL_ADDR=http://%s:8500", module.consul_aws.consul_app_lb_dns)}
+  ${format("export CONSUL_HTTP_ADDR=http://%s:8500", module.consul_aws.consul_app_lb_dns)}
 
 # ------------------------------------------------------------------------------
 # Consul Dev
 # ------------------------------------------------------------------------------
 
-${format("Consul UI: http://%s %s", module.consul_aws.consul_lb_dns, var.consul_public ? "(Public)" : "(Internal)")}
+If public, you can SSH into the Consul nodes directly through the LB.
 
-You can SSH into the Consul node by updating the "PUBLIC_IP" and running the
-below command.
-
-  $ ${format("ssh -A -i %s %s@%s", module.ssh_keypair_aws_override.private_key_filename, module.consul_aws.consul_username, "PUBLIC_IP")}
+  $ ${format("ssh -A -i %s \\\n      %s@%s", module.ssh_keypair_aws_override.private_key_filename, module.consul_aws.consul_username, module.consul_aws.consul_network_lb_dns)}
 
 ${module.consul_aws.zREADME}
 README
@@ -71,6 +69,10 @@ output "subnet_public_ids" {
 
 output "subnet_private_ids" {
   value = "${module.network_aws.subnet_private_ids}"
+}
+
+output "bastion_sg_id" {
+  value = "${module.network_aws.bastion_sg_id}"
 }
 
 output "private_key_name" {
@@ -105,14 +107,46 @@ output "consul_sg_id" {
   value = "${module.consul_aws.consul_sg_id}"
 }
 
-output "consul_lb_sg_id" {
-  value = "${module.consul_aws.consul_lb_sg_id}"
+output "consul_app_lb_sg_id" {
+  value = "${module.consul_aws.consul_app_lb_sg_id}"
+}
+
+output "consul_lb_arn" {
+  value = "${module.consul_aws.consul_lb_arn}"
+}
+
+output "consul_app_lb_dns" {
+  value = "${module.consul_aws.consul_app_lb_dns}"
+}
+
+output "consul_network_lb_dns" {
+  value = "${module.consul_aws.consul_network_lb_dns}"
+}
+
+output "consul_tg_tcp_22_arn" {
+  value = "${module.consul_aws.consul_tg_tcp_22_arn}"
+}
+
+output "consul_tg_tcp_8500_arn" {
+  value = "${module.consul_aws.consul_tg_tcp_8500_arn}"
 }
 
 output "consul_tg_http_8500_arn" {
   value = "${module.consul_aws.consul_tg_http_8500_arn}"
 }
 
-output "consul_lb_dns" {
-  value = "${module.consul_aws.consul_lb_dns}"
+output "consul_tg_tcp_8080_arn" {
+  value = "${module.consul_aws.consul_tg_tcp_8080_arn}"
+}
+
+output "consul_tg_https_8080_arn" {
+  value = "${module.consul_aws.consul_tg_https_8080_arn}"
+}
+
+output "consul_tg_http_3030_arn" {
+  value = "${module.consul_aws.consul_tg_http_3030_arn}"
+}
+
+output "consul_tg_https_3030_arn" {
+  value = "${module.consul_aws.consul_tg_https_3030_arn}"
 }
