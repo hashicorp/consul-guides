@@ -23,7 +23,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # consul_servers  = 3
 # consul_instance = "t2.micro"
-# consul_version  = "1.2.0" # Consul Version for runtime install, defaults to 1.2.0
+# consul_version  = "1.2.3" # Consul Version for runtime install, defaults to 1.2.3
 # consul_url      = "" # Consul Enterprise download URL for runtime install, defaults to Consul OSS
 # consul_image_id = "" # AMI ID override, defaults to base RHEL AMI
 
