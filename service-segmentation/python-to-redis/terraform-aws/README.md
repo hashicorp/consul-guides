@@ -29,7 +29,7 @@ In order the perform the steps in this guide, you will need to have [Terraform](
 
 ### Provision cluster and deploy services
 1. `git clone` this repo into a host machine.
-2. From a terminal `cd` into this subdirectory: `cd consul-connect-guide-terraform`.
+2. From a terminal `cd` into this subdirectory: `cd terraform-aws`.
   - Optional: set the `CONSUL_DEMO_VERSION` environment variable in [setup/consul_n1_setup.sh] and [setup/consul_n2_setup.sh] (defaults to 1.2.2).
 3. Export the following environment variables to setup AWS provider:
 ```

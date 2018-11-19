@@ -5,6 +5,6 @@ This guide consists of a python client microservice called `clientms`, connectin
 
 There are 2 different ways to setup this guide depending on the desired level of complexity. Please view  `README.md` file in the appropriate subdirectory to proceed with this guide:
 
-1. [`vagrant-local`](vagrant-local/): Guide with each service running on separate **Vagrant VMs** on a local machine.
+1. [vagrant-local](vagrant-local/): Guide with each service running on separate **Vagrant VMs** on a local machine.
 
-2. [`terraform-aws`](terraform-aws/): Guide with each service running on separate **AWS EC2 instances**.
+2. [terraform-aws](terraform-aws/): Guide with each service running on separate **AWS EC2 instances**.

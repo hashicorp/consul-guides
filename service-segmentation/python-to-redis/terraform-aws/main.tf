@@ -114,7 +114,7 @@ data "aws_ami" "ubuntu" {
     most_recent = true
     filter {
         name   = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+        values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
     }
     filter {
         name   = "virtualization-type"
@@ -144,7 +144,7 @@ resource "aws_instance" "consul-n1-clientms" {
   vpc_security_group_ids = ["${aws_security_group.cc-demo-sg.id}"]
   subnet_id = "${aws_subnet.cc-demo-public-1.id}"
   private_ip = "172.16.20.10"
- 
+
   tags {
     Name = "consul-n1-clientms"
     App = "clientms"
@@ -156,7 +156,7 @@ resource "aws_instance" "consul-n1-clientms" {
   provisioner "file" {
     source      = "./setup"
     destination = "/tmp"
-    
+
     connection {
       type     = "ssh"
       user     = "ubuntu"
@@ -171,7 +171,7 @@ resource "aws_instance" "consul-n1-clientms" {
       "chmod +x /tmp/setup/consul_n1_setup.sh",
       "cd /tmp/setup && sudo ./consul_n1_setup.sh",
     ]
-    
+
     connection {
       type     = "ssh"
       user     = "ubuntu"
@@ -190,7 +190,7 @@ resource "aws_instance" "consul-n2-redis-server" {
   vpc_security_group_ids = ["${aws_security_group.cc-demo-sg.id}"]
   subnet_id = "${aws_subnet.cc-demo-public-1.id}"
   private_ip = "172.16.20.11"
- 
+
   tags {
     Name = "consul-n2-redis-server"
     App = "Redis"
@@ -202,7 +202,7 @@ resource "aws_instance" "consul-n2-redis-server" {
   provisioner "file" {
     source      = "./setup"
     destination = "/tmp"
-    
+
     connection {
       type     = "ssh"
       user     = "ubuntu"
@@ -217,7 +217,7 @@ resource "aws_instance" "consul-n2-redis-server" {
       "chmod +x /tmp/setup/consul_n2_setup.sh",
       "cd /tmp/setup && sudo ./consul_n2_setup.sh",
     ]
-    
+
     connection {
       type     = "ssh"
       user     = "ubuntu"
@@ -226,4 +226,3 @@ resource "aws_instance" "consul-n2-redis-server" {
     }
   }
 }
-
