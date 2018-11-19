@@ -1,18 +1,18 @@
-export CONSUL_DEMO_VERSION=1.2.2 
+export CONSUL_DEMO_VERSION=1.2.2
 
 #Install Consul and dependencies
 echo "Installing dependencies ..."
-sudo apt-get update
-sudo apt-get install -y git unzip curl jq dnsutils
+apt-get update -y
+apt-get install -y git unzip curl jq dnsutils
 echo "Fetching Consul version ${CONSUL_DEMO_VERSION} ..."
 cd /tmp/
 curl -s https://releases.hashicorp.com/consul/${CONSUL_DEMO_VERSION}/consul_${CONSUL_DEMO_VERSION}_linux_amd64.zip -o consul.zip
 echo "Installing Consul version ${CONSUL_DEMO_VERSION} ..."
 unzip consul.zip
-sudo chmod +x consul
-sudo mv consul /usr/bin/consul
-sudo mkdir /etc/consul.d
-sudo chmod a+w /etc/consul.d
+chmod +x consul
+mv consul /usr/bin/consul
+mkdir /etc/consul.d
+chmod a+w /etc/consul.d
 
 #Install and start Docker
 apt-get update -y
@@ -53,4 +53,4 @@ systemctl enable consul.service
 systemctl start consul.service
 
 #Start Redis:
-docker run --name=redis -d -p 6379:6379 redis:latest  
+docker run --name=redis -d -p 6379:6379 redis:latest
