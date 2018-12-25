@@ -1,0 +1,93 @@
+{
+    "variables": {
+        "gcp_account_file": "{{ env `GCP_ACCOUNT_FILE_JSON`}}",
+        "gcp_project_id": "{{ env `GCP_PROJECT_ID` }}",
+        "gcp_zone": "{{ env `GCP_ZONE` }}",
+        "aws_access_key": "{{ env `AWS_ACCESS_KEY` }}",
+        "aws_secret_key": "{{ env `AWS_SECRET_KEY` }}",
+        "aws_region": "{{ env `AWS_REGION` }}",
+        "dc_name": "{{ env `DC_NAME` }}",
+        "role": "consul-client-listing",
+        "type": "{{ env `NODE_TYPE` }}"
+    },
+    "builders": [
+      {
+        "image_name": "{{ user `dc_name` }}-gcp-ubuntu-consul-{{ user `type` }}-listing-noconnect",
+        "type": "googlecompute",
+        "account_file": "{{ user `gcp_account_file` }}",
+        "project_id": "{{ user `gcp_project_id` }}",
+        "source_image": "{{ user `dc_name` }}-gcp-ubuntu-consul-client",
+        "ssh_username": "ubuntu",
+        "machine_type": "n1-standard-1",
+        "zone" : "{{ user `gcp_zone` }}",
+        "tags": ["{{ user `role` }}"]
+      },
+      {
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "{{user `aws_region`}}",
+        "source_ami_filter": {
+            "filters": {
+                "virtualization-type": "hvm",
+                "name": "{{ user `dc_name` }}-aws-ubuntu-consul-client-*",
+                "root-device-type": "ebs"
+            },
+            "owners": ["753646501470"],
+            "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "{{ user `dc_name` }}-aws-ubuntu-listing-envconsul-noconnect-{{timestamp}}",
+        "tags": {
+            "Name": "CC Demo Ubuntu Listing Server - No Consul Connect + Envconsul and Consul-Template",
+            "owner": "thomas@hashicorp.com",
+            "project": "CC Demo SE East Quarterly Training",
+            "Base_AMI_Name": "{{ .SourceAMIName }}",
+            "Base_AMI": "{{ .SourceAMI }}",
+            "role": "{{ user `role` }}"
+        },
+	"ami_groups": ["all"]
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "files/install_node.sh",
+        "destination": "/tmp/install_node.sh"
+      },
+      {
+        "type": "file",
+        "source": "files/install_env_consul_template.sh",
+        "destination": "/tmp/install_env_consul_template.sh"
+      },
+      {
+        "type": "file",
+        "source": "services/listing-noconnect.hcl",
+        "destination": "/tmp/listing.hcl"
+      },
+      {
+	"type": "file",
+	"source": "files/listing.service-noconnect",
+	"destination": "/tmp/listing.service"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "sudo chmod a+x /tmp/install_node.sh",
+          "sudo /tmp/install_node.sh",
+	  "sudo rm -f /tmp/install_node.sh",
+          "sudo mv /tmp/listing.hcl /etc/consul/listing.hcl",
+	  "sudo mv /tmp/listing.service /lib/systemd/system/listing.service",
+          "sudo chown -R consul:consul /etc/consul",
+          "sudo chmod a+x /tmp/install_env_consul_template.sh",
+          "sudo rm -f /tmp/install_env_consul_template.sh",
+	         "sudo systemctl daemon-reload",
+          "sudo systemctl enable consul",
+          "sudo systemctl enable consul_enable_acl.service",
+	  "sudo systemctl enable listing.service",
+	  "sudo rm -rf /opt/consul/*"
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,10 @@
+product:
+    version: {{ keyOrDefault "product/config/version" "1.0" }}
+    DB_ADDR: {{ keyOrDefault "product/config/DB_ADDR" "product.service.consul" }}
+    DB_PORT: {{ keyOrDefault "product/config/DB_PORT" "27017" }}
+    DB_NAME: {{ keyOrDefault "product/config/DB_NAME" "bbthe90s" }}
+    COL_NAME: {{ keyOrDefault "product/config/COL_NAME" "products" }}
+    PRODUCT_PORT: {{ keyOrDefault "product/config/PRODUCT_PORT" "5000" }}
+    PRODUCT_ADDR: {{ keyOrDefault "product/config/PRODUCT_ADDR" "0.0.0.0" }}
+    AWS_EC2_ROLE: {{ keyOrDefault "product/config/AWS_EC2_ROLE" "dev-role" }}
+    VAULT_SECRET_PATH: {{ keyOrDefault "product/config/VAULT_SECRET_PATH" "mongo/creds/catalog" }}

@@ -1,0 +1,68 @@
+{
+    "variables": {
+        "gcp_account_file": "{{ env `GCP_ACCOUNT_FILE_JSON`}}",
+        "gcp_project_id": "{{ env `GCP_PROJECT_ID` }}",
+        "gcp_zone": "{{ env `GCP_ZONE` }}",
+        "dc_name": "{{ env `DC_NAME` }}",
+        "aws_access_key": "{{ env `AWS_ACCESS_KEY` }}",
+        "aws_secret_key": "{{ env `AWS_SECRET_KEY` }}",
+        "aws_region": "{{ env `AWS_REGION` }}",
+        "role": "consul-client",
+        "type": "{{ env `NODE_TYPE` }}"
+    },
+    "builders": [
+      {
+        "image_name": "{{ user `dc_name` }}-gcp-ubuntu-consul-client",
+        "type": "googlecompute",
+        "account_file": "{{ user `gcp_account_file` }}",
+        "project_id": "{{ user `gcp_project_id` }}",
+        "source_image": "{{ user `dc_name` }}-gcp-ubuntu-consul-base",
+        "ssh_username": "ubuntu",
+        "machine_type": "n1-standard-1",
+        "zone" : "{{ user `gcp_zone` }}",
+        "tags": ["{{ user `client` }}"]
+      },
+      {
+	"type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "{{user `aws_region`}}",
+        "source_ami_filter": {
+            "filters": {
+                "virtualization-type": "hvm",
+                "name": "{{ user `dc_name` }}-aws-ubuntu-consul-base-*",
+                "root-device-type": "ebs"
+            },
+            "owners": ["753646501470"],
+            "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "{{ user `dc_name` }}-aws-ubuntu-consul-client-{{timestamp}}",
+        "tags": {
+            "Name": "CC Demo Ubuntu Consul Client",
+            "owner": "thomas@hashicorp.com",
+            "project": "CC Demo SE East Quarterly Training",
+            "Base_AMI_Name": "{{ .SourceAMIName }}",
+            "Base_AMI": "{{ .SourceAMI }}",
+            "role": "{{ user `role` }}"
+        },
+	"ami_groups": ["all"]
+      }
+    ],
+    "provisioners": [
+	{
+	    "type": "file",
+	    "source": "files/client.hcl",
+	    "destination": "/tmp/client.hcl"
+	},
+	{
+	    "type": "shell",
+	    "inline": [
+		"sudo mv /tmp/client.hcl /etc/consul/client.hcl",
+		"sudo rm -f /tmp/client.hcl",
+		"sudo rm -rf /opt/consul/*"
+	    ]
+	}
+    ]
+}
