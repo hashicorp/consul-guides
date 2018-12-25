@@ -41,7 +41,7 @@ This repo uses Terraform to deploy the items below.
     - Consult-template version is specified in [install_client_tools.sh](packer/files/install_client_tools.sh).
     - Mongo DB credentials are obtained from Vault using [hvac Vault Python SDK](https://github.com/hvac/hvac). AWS EC2 Authentication is utilized to obtain a Vault token, then read from AWS dynamic secrets engine.
 
-  - A Node.js [Listing API](application/listing-service/blob/master/README.md)
+  - A Node.js [Listing API](application/listing-service/README.md)
     - Application configuration key value pairs are stored in Consul, and read as Environment Variables.
     - [Envconsul](https://github.com/hashicorp/envconsul) (v0.7.3) is used to render environment variables and manage application lifecycle.
     - EnvConsul version is specified in [install_client_tools.sh](packer/files/install_client_tools.sh).
