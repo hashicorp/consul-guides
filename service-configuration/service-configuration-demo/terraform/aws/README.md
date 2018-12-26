@@ -20,8 +20,8 @@ This terraform code will spin up a simple three-tier web application _without_ C
 4. An already-existing [Amazon EC2 Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html). *NOTE*: if the EC2 Key Pair you specify is not your default ssh key, you will need to use `ssh -i /path/to/private_key` instead of `ssh` in the commands below
 
 ### Build AMIs using Packer (optional)
-- The packer configuration used to build the machine images is in the `packer` directory. All images are currently public and reside in AWS `us-east-1` region.
-- If you want to build the AWS AMIs use the steps below:
+The packer configuration used to build the machine images is in the `packer` directory. All images are currently public and reside in AWS `us-east-1` region. The images were built using packer version `1.3.1`.
+If you want to build the AWS AMIs use the steps below:
   - Edit the AWS Account # appropriately in `packer/*.json` file. More specifically, adjust the `"owners": ["<your-aws-account-#>"]` parameter to reflect your AWS account #.
   - Change to the `packer` directory: `cd packer`.
   - Then issue the command: `make aws`.
@@ -29,7 +29,9 @@ This terraform code will spin up a simple three-tier web application _without_ C
 ### Provisioning
 
 #### Terraform steps
- 1. Open a terminal window and please run the commands:
+The provisioning steps below were testing using terraform `v0.11.10`. You can download Terraform for your machine from the [Terraform downloads](https://www.terraform.io/downloads.html) page.
+
+ 1. Please open a terminal window and run the commands:
 ```
 export AWS_ACCESS_KEY_ID="<your access key ID>"
 export AWS_SECRET_ACCESS_KEY="<your secret key>"
