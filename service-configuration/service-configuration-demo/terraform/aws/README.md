@@ -68,7 +68,9 @@ consul kv get listing/config/version
 ```
 Try adding `-detailed` to see additional kv metadata: `consul kv get -detailed product/config/version`
 
-4. Consul UI (optional): If you have setup the Terraform variable `security_group_ingress` in your terraform.auto.tfvars, you can view these in the Consul UI. To construct the URL for Consul UI you can issue the command `terraform output consul_servers` and use any DNS name with port 8500: `"http://<consul_server>:8500/ui"`
+4. Consul UI (optional): If you have setup the Terraform variable `security_group_ingress` in your terraform.auto.tfvars, you can view these in the Consul UI.
+  - To construct the URL for Consul UI you can issue the command `terraform output consul_servers` and use any DNS name with port 8500: `"http://<consul_server>:8500/ui"`
+  - Click on "Key/Value", click "product" or "listing", then click on "config" to view configuration data.
 
 #### Service Configuration for Product service
   - On your terminal, exit out of the web_client SSH session and issue: `terraform output product_api_servers`
