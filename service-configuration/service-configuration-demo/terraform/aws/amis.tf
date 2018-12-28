@@ -4,7 +4,7 @@ data "aws_ami" "vault" {
 
     filter {
         name   = "name"
-        values = ["east-aws-ubuntu-vault-server-*"]
+        values = ["*-aws-ubuntu-vault-server-*"]
     }
 }
 
@@ -14,7 +14,7 @@ data "aws_ami" "consul" {
 
     filter {
         name   = "name"
-        values = ["east-aws-ubuntu-consul-server-*"]
+        values = ["*-aws-ubuntu-consul-server-*"]
     }
 }
 
@@ -24,27 +24,7 @@ data "aws_ami" "mongo-noconnect" {
 
     filter {
         name   = "name"
-        values = ["east-aws-ubuntu-mongodb-noconnect-*"]
-    }
-}
-
-data "aws_ami" "mongo-connect" {
-    most_recent = true
-    owners      = ["753646501470"] # hc-sc-demos-2018
-
-    filter {
-        name   = "name"
-        values = ["east-aws-ubuntu-mongodb-connect-*"]
-    }
-}
-
-data "aws_ami" "product-api-noconnect" {
-    most_recent = true
-    owners      = ["753646501470"] # hc-sc-demos-2018
-
-    filter {
-        name   = "name"
-        values = ["east-aws-ubuntu-product-noconnect-*"]
+        values = ["*-aws-ubuntu-mongodb-noconnect-*"]
     }
 }
 
@@ -54,37 +34,7 @@ data "aws_ami" "product-api-noconnect-consul-template" {
 
     filter {
         name   = "name"
-        values = ["east-aws-ubuntu-product-consul-template-noconnect-*"]
-    }
-}
-
-data "aws_ami" "product-api-connect" {
-    most_recent = true
-    owners      = ["753646501470"] # hc-sc-demos-2018
-
-    filter {
-        name   = "name"
-        values = ["east-aws-ubuntu-product-connect-*"]
-    }
-}
-
-data "aws_ami" "listing-api-connect" {
-    most_recent = true
-    owners      = ["753646501470"] # hc-sc-demos-2018
-
-    filter {
-        name   = "name"
-        values = ["east-aws-ubuntu-listing-server-connect-*"]
-    }
-}
-
-data "aws_ami" "listing-api-noconnect" {
-    most_recent = true
-    owners      = ["753646501470"] # hc-sc-demos-2018
-
-    filter {
-        name   = "name"
-        values = ["east-aws-ubuntu-listing-server-noconnect-*"]
+        values = ["*-aws-ubuntu-product-consul-template-noconnect-*"]
     }
 }
 
@@ -94,17 +44,7 @@ data "aws_ami" "listing-api-noconnect-envconsul" {
 
     filter {
         name   = "name"
-        values = ["east-aws-ubuntu-listing-envconsul-noconnect-*"]
-    }
-}
-
-data "aws_ami" "webclient-connect" {
-    most_recent = true
-    owners      = ["753646501470"] # hc-sc-demos-2018
-
-    filter {
-        name   = "name"
-        values = ["east-aws-ubuntu-webclient-connect-*"]
+        values = ["*-aws-ubuntu-listing-envconsul-noconnect-*"]
     }
 }
 
@@ -114,6 +54,6 @@ data "aws_ami" "webclient-noconnect" {
 
     filter {
         name   = "name"
-        values = ["east-aws-ubuntu-webclient-noconnect-*"]
+        values = ["*-aws-ubuntu-webclient-noconnect-*"]
     }
 }

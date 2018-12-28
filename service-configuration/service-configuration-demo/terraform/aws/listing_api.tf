@@ -10,7 +10,7 @@ data "template_file" "listing_startup_script" {
 }
 
 resource aws_instance "listing-api" {
-    ami                         = "${var.mode == "connect" ? data.aws_ami.listing-api-connect.id : data.aws_ami.listing-api-noconnect-envconsul.id}"
+    ami                         = "${data.aws_ami.listing-api-noconnect-envconsul.id}"
     count			= "${var.client_listing_count}"
     instance_type		= "${var.client_machine_type}"
     key_name			= "${var.ssh_key_name}"

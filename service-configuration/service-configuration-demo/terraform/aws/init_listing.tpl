@@ -6,8 +6,10 @@ systemctl stop listing.service
 
 # Download application
 cd /tmp
-git clone https://github.com/kawsark/thomas_cc_demo.git
-cp -r /tmp/thomas_cc_demo/application/listing-service /opt
+git clone https://github.com/hashicorp/consul-guides.git
+# PR only step:
+cd consul-guides && git fetch && git checkout add-service-configuration && cd ..
+cp -r /tmp/consul-guides/service-configuration/service-configuration-demo/application/listing-service /opt
 
 # Create application directory and create a PID file:
 cd /opt

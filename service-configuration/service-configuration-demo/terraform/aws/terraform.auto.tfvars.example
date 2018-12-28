@@ -9,7 +9,7 @@
 project_name    = "kawsar-configuration-demo"
 hashi_tags      = { "TTL" = "48", owner = "kawsar@hashicorp.com", "project" = "Service Configuration demo" }
 
-# Packer images currently only exist in "us-east-1"
+# Packer images currently exist in "us-east-1" and "us-west-1"
 aws_region      = "us-east-1"
 
 # This is the name of an already existing SSH Keypair in AWS in the above AWS region
