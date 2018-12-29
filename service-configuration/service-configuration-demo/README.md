@@ -15,7 +15,7 @@ This repo uses Terraform to deploy the items below.
 
   - A Mongo DB server (v3.6) with a Database called `bbthe90s`, and 2 Collections: `Products` and `Listing` will  be deployed to provide example data. MongoDB is installed using [install_mongodb.sh](packer/files/install_mongodb.sh).
 
-1. **Application components**:
+2. **Application components**:
   - A Python [Web Client](application/simple-client) that interacts with the end user. It queries Product and Listing API, then displays the contents on a web page.
 
   - A Python [Product API](application/product-service/README.md)
