@@ -1,4 +1,4 @@
-# Service Configuration Using Consul Template, envconsul, and Vault
+# Service Configuration Using Consul Template, Envconsul, and Vault
 
 This repo demonstrates how to leverage tools such as  [Consul Template](https://github.com/hashicorp/consul-template/blob/master/README.md) and [envconsul](https://github.com/hashicorp/envconsul/blob/master/README.md) for service configuration. These tools read application configuration from Consul and secrets from Vault and manage the application lifecycle.
 
