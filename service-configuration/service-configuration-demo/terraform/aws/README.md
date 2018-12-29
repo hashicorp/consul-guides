@@ -4,7 +4,7 @@
 
 This terraform code will spin up a simple three-tier web application: a web frontend `web_client`, 2 APIs: `listing` and `product`, and a MongoDB instance. Please view the main [README](../../README.md) for an Architecture overview.
 
-### Demo steps
+## Demo steps
 - [Pre-requisites](README.md#pre-requisites)
 - [Build AMIs using Packer (Optional)](README.md#build-amis-using-packer-optional-)
 - [Provisioning](README.md#provisioning)
@@ -15,19 +15,19 @@ This terraform code will spin up a simple three-tier web application: a web fron
   - [Dynamic Credentials for Listing Service with Envconsul](README.md#dynamic-credentials-for-listing-service-with-envconsul)
   - [Dynamic Credentials for Product Service with Vault API](README.md#dynamic-credentials-for-product-service-with-vault-api)
 
-### Pre-requisites
+## Pre-requisites
 
 1. A machine with git and ssh installed
 2. The appropriate [Terraform binary](https://www.terraform.io/downloads.html) for your system. This demo was tested using terraform `v0.11.10`.
 3. An AWS account with credentials which allow you to deploy infrastructure.
 4. An already-existing [Amazon EC2 Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) in the desired region.
 
-### Build AMIs using Packer (optional)
+## Build AMIs using Packer (optional)
 Please see [README.md](../../packer/README.md) from `packer` directory.
 
-### Provisioning
+## Provisioning
 
-#### Terraform steps
+### Terraform steps
  1. Please open a terminal window and run the commands:
 ```
 export AWS_ACCESS_KEY_ID="<your access key ID>"
@@ -53,11 +53,11 @@ Replace `<your access key ID>` with your AWS Access Key ID and `<your secret key
 
 Once the command prompt returns, the demo will be ready within a minute.
 
-### Access the application
+## Access the application
 
  1. Run `terraform output webclient-lb` and point a web browser at the value returned.
 
-### Service Configuration
+## Service Configuration
 
 1. On the web browser "Product metadata" and "Listing metadata" sections, note the version string for both Product and Listing service. It should say `'version': 1.0`.
 2. From a terminal session SSH into a web_client server:
@@ -76,7 +76,7 @@ Try adding `-detailed` to see additional kv metadata: `consul kv get -detailed p
   - To construct the URL for Consul UI you can issue the command `terraform output consul_servers` and use any DNS name with port 8500: `"http://<consul_server>:8500/ui"`
   - Click on "Key/Value", click "product" or "listing", then click on "config" to view configuration data.
 
-#### Service Configuration for Product Service with Consul Template
+### Service Configuration for Product Service with Consul Template
   - On your terminal, exit out of the web_client SSH session and issue: `terraform output product_api_servers`
   - `ssh -i <your_pem_file> ubuntu@<first_dns_returned>`
   - Consul Template manages the lifecycle for this application. Issue the command `systemctl status product.service` and you will see `Main PID: 1642 (consul-template)`, and a process hierarchy as below (your PID #s will be different):
@@ -105,7 +105,7 @@ Try adding `-detailed` to see additional kv metadata: `consul kv get -detailed p
   ```
 You will see version 1.5 in `config.yml` and metadata. Upon updating the version string, Consul Template rendered the config file and restarted product service immediately.
 
-#### Service Configuration for Listing Service with Envconsul
+### Service Configuration for Listing Service with Envconsul
   - On your terminal, exit out of the Product SSH session and issue: `terraform output listing_api_servers`
   - `ssh -i <your_pem_file> ubuntu@<first_dns_returned>`
   - Envconsul manages the lifecycle for this application. Issue the command `systemctl status listing.service` and you will see `Main PID: 1656 (envconsul)`, and a process hierarchy as below (your PID #s will be different):
@@ -136,7 +136,7 @@ Both envconsul and Consul Template established a watch against Consul at the spe
 
 Please note that envconsul and Consul Template are not required for service configuration using Consul. While using these tools help with application integration, services can use Consul's REST API to read configuration information directly.
 
-### Dynamic Credentials
+## Dynamic Credentials
 
 This demo uses Vault's [AWS EC2 Authentication method](https://www.vaultproject.io/docs/auth/aws.html#ec2-auth-method) with the [Mongo DB Database Secrets Engine](https://www.vaultproject.io/docs/secrets/databases/mongodb.html#mongodb-database-secrets-engine).
 - On your terminal, exit out of the Listing SSH session and issue: `terraform output vault_servers`
@@ -163,7 +163,7 @@ vault secrets list
 
 Now lets review how each service renews credentials:
 
-#### Dynamic Credentials for Listing Service with Envconsul
+### Dynamic Credentials for Listing Service with Envconsul
 - The listing service uses the Environment Variables `username` and `password` to read Mongo DB credentials. These variables are passed to the listing service by envconsul:
   - Envconsul interacts with Vault using a token that was supplied during bootstrap process.
   - (Optional) View the [init\_listing.tpl](init\_listing.tpl) see this process. You will see the `VAULT_TOKEN` environment variable being set in the systemd unit file: `/lib/systemd/system/listing.service`.
@@ -186,7 +186,7 @@ Now refresh the web browser and the Listing service should stop working. Envcons
 
 *But why is the Product service still working??*
 
-#### Dynamic Credentials for Product Service with Vault API
+### Dynamic Credentials for Product Service with Vault API
 - From a new terminal session, please issue: `terraform output product_api_servers`
 - `ssh -i <your_pem_file> ubuntu@<first_dns_returned>`
 - The product service uses [Vault hvac Python SDK](https://github.com/hvac/hvac) to authenticate with the Vault server. It obtains a Vault token, then reads the MongoDB credential from the path: `mongo/creds/catalog`.
