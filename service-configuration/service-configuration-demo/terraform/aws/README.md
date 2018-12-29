@@ -9,7 +9,11 @@ This terraform code will spin up a simple three-tier web application: a web fron
 - [Build AMIs using Packer (Optional)](README.md#build-amis-using-packer-optional-)
 - [Provisioning](README.md#provisioning)
 - [Service Configuration](README.md#service-configuration)
-- [Secrets Management](README.md#dynamic-credentials)
+  - [Service Configuration for Product Service with Consul Template](README.md#service-configuration-for-product-service-with-consul-template)
+  - [Service Configuration for Listing Service with Envconsul](README.md#service-configuration-for-listing-service-with-envconsul)
+- [Dynamic Credentials](README.md#dynamic-credentials)
+  - [Dynamic Credentials for Listing Service with Envconsul](README.md#dynamic-credentials-for-listing-service-with-envconsul)
+  - [Dynamic Credentials for Product Service with Vault API](README.md#dynamic-credentials-for-product-service-with-vault-api)
 
 ### Pre-requisites
 
@@ -72,65 +76,65 @@ Try adding `-detailed` to see additional kv metadata: `consul kv get -detailed p
   - To construct the URL for Consul UI you can issue the command `terraform output consul_servers` and use any DNS name with port 8500: `"http://<consul_server>:8500/ui"`
   - Click on "Key/Value", click "product" or "listing", then click on "config" to view configuration data.
 
-#### Service Configuration for Product service
+#### Service Configuration for Product Service with Consul Template
   - On your terminal, exit out of the web_client SSH session and issue: `terraform output product_api_servers`
   - `ssh -i <your_pem_file> ubuntu@<first_dns_returned>`
-  - Consul-template manages the lifecycle for this application. Issue the command `systemctl status product.service` and you will see `Main PID: 1642 (consul-template)`, and a process hierarchy as below (your PID #s will be different):
+  - Consul Template manages the lifecycle for this application. Issue the command `systemctl status product.service` and you will see `Main PID: 1642 (consul-template)`, and a process hierarchy as below (your PID #s will be different):
   ```
  ├─1642 /usr/local/bin/consul-template -config /opt/product-service/product_consul_template.hcl
  └─1662 /usr/bin/python3 /opt/product-service/product.py
   ```
-  Hit `q` to exit. Consul-template is triggered as a daemon service from the systemd unit file: `/lib/systemd/system/product.service`
+  Hit `q` to exit if needed. Consul Template is triggered as a daemon service from the systemd unit file: `/lib/systemd/system/product.service`
 
   - Lets view product service configuration data in Consul:
   ```
   consul kv get -recurse product/config
   ```
-  - Consul-template reads the above values and renders an application configuration file: `/opt/product-service/config.yml`. Display the contents of this file: `cat /opt/product-service/config.yml`. Product service reads this file from [product.py](../../application/product-service/product.py) (see comment: _`# Try to load the product yaml configuration file`_).
-  - The configuration for consul-template can be seen here: `cat /opt/product-service/product_consul_template.hcl`. The following line tells consul-template where to find the input template:
+  - Consul Template reads the above values and renders an application configuration file: `/opt/product-service/config.yml`. Display the contents of this file: `cat /opt/product-service/config.yml`. Product service reads this file from [product.py](../../application/product-service/product.py) (see comment: _`# Try to load the product yaml configuration file`_).
+  - The configuration for Consul Template can be seen here: `cat /opt/product-service/product_consul_template.hcl`. The following line tells Consul Template where to find the input template:
   ```
   source = "/opt/product-service/config.ctpl"
   ```
-  - If you display the above file it will show where consul-template pulls the configuration from: `cat /opt/product-service/config.ctpl`.
-  - You will notice a set of `keyOrDefault` entries. This tells Consul-template to look for the specified key in Consul's distributed key/value store, then render the corresponding value. If the specified key is not found, then Consul-template will use the default value.
+  - If you display the above file it will show where Consul Template pulls the configuration from: `cat /opt/product-service/config.ctpl`.
+  - You will notice a set of `keyOrDefault` entries. This tells Consul Template to look for the specified key in Consul's distributed key/value store, then render the corresponding value. If the specified key is not found, then Consul Template will use the default value.
   - Lets modify the version string to `1.5`, then check `config.yml` and the metadata endpoint.
   ```
   consul kv put product/config/version 1.5
   cat /opt/product-service/config.yml
   curl -s product.service.consul:5000/product/metadata
   ```
-You will see version 1.5 in `config.yml` and metadata. Upon updating the version string, Consul-template rendered the config file and restarted product service immediately.
+You will see version 1.5 in `config.yml` and metadata. Upon updating the version string, Consul Template rendered the config file and restarted product service immediately.
 
-#### Service Configuration for Listing service
-  - On your terminal, exit out of the Listing SSH session and issue: `terraform output listing_api_servers`
+#### Service Configuration for Listing Service with Envconsul
+  - On your terminal, exit out of the Product SSH session and issue: `terraform output listing_api_servers`
   - `ssh -i <your_pem_file> ubuntu@<first_dns_returned>`
   - Envconsul manages the lifecycle for this application. Issue the command `systemctl status listing.service` and you will see `Main PID: 1656 (envconsul)`, and a process hierarchy as below (your PID #s will be different):
   ```
   ├─1656 /usr/local/bin/envconsul -config /opt/listing-service/listing_envconsul.hcl
   └─4866 /usr/bin/node /opt/listing-service/server.js
   ```
-  Hit `q` to exit. EnvConsul is triggered as a daemon service from the systemd unit file: `/lib/systemd/system/listing.service`
+  Hit `q` to exit if needed. Envconsul is triggered as a daemon service from the systemd unit file: `/lib/systemd/system/listing.service`
   - Lets view listing service configuration data in Consul:
   ```
   consul kv get -recurse listing/config
   ```
-  - Envconsul reads these values and launches the application as a subprocess with these Environment variables. Listing service reads these environment variables from [db.js](../../application/listing-service/config/db.js).
-  - The configuration for Envconsul can be seen here: `cat /opt/listing-service/listing_envconsul.hcl`. Lets go over a few parameters in this file:
-    - `command = "/usr/bin/node /opt/listing-service/server.js"` tells Envconsul how to start the application.
-    - The `secret` stanza tells Envconsul to read the secret path `mongo/creds/catalog` from Vault. These are set as environment variables: `username` and `password`.
-    - The `prefix` stanza tells Envconsul to read all key value pairs on the path `listing/config` from Consul's distributed key / value store. These are set as environment variables: `DB_URL`, `DB_PORT`, `DB_NAME` and `DB_COLLECTION`.
+  - Envconsul reads these values and launches the application as a subprocess with these environment variables. The listing service reads these environment variables from [db.js](../../application/listing-service/config/db.js). Note that the environment variables will not show up if you use the `env` command in your SSH session since they are only set for the subprocess.
+  - The configuration for envconsul can be seen here: `cat /opt/listing-service/listing_envconsul.hcl`. Lets go over a few parameters in this file:
+    - `command = "/usr/bin/node /opt/listing-service/server.js"` tells envconsul how to start the application.
+    - The `secret` stanza tells envconsul to read the secret path `mongo/creds/catalog` from Vault. These are set as environment variables: `username` and `password`.
+    - The `prefix` stanza tells envconsul to read all key value pairs on the path `listing/config` from Consul's distributed key / value store. These are set as environment variables: `DB_URL`, `DB_PORT`, `DB_NAME` and `DB_COLLECTION`.
   - Lets modify the version string to `1.5` and check the metadata endpoint.
 ```
 consul kv put listing/config/version 1.5
 curl listing.service.consul:8000/metadata
 ```
-  You will see version 1.5 returned by the application. Upon updating the version string, Envconsul restarted the listing service immediately with updated Environment variables.
+  You will see version 1.5 returned by the application. Upon updating the version string, envconsul restarted the listing service immediately with updated environment variables.
 
 Switch to the web browser and refresh, the version strings should both say `'version': 1.5` now.
 
-Both Envconsul and Consul-template established a watch against Consul at the specified prefix and immediately took action upon an update. This approach allows for fast convergence time to distribute updates at scale.  
+Both envconsul and Consul Template established a watch against Consul at the specified prefix and immediately took action upon an update. This approach allows for fast convergence time to distribute updates at scale.  
 
-Please note that Envconsul and Consul-template are not required for service configuration using Consul. While using these tools help with application integration, services can use Consul's REST API to read configuration information directly.
+Please note that envconsul and Consul Template are not required for service configuration using Consul. While using these tools help with application integration, services can use Consul's REST API to read configuration information directly.
 
 ### Dynamic Credentials
 
@@ -159,11 +163,11 @@ vault secrets list
 
 Now lets review how each service renews credentials:
 
-#### Dynamic Credentials for Listing service
-- The listing service uses the Environment Variables `username` and `password` to read Mongo DB credentials. These variables are passed to the listing service by Envconsul:
+#### Dynamic Credentials for Listing Service with Envconsul
+- The listing service uses the Environment Variables `username` and `password` to read Mongo DB credentials. These variables are passed to the listing service by envconsul:
   - Envconsul interacts with Vault using a token that was supplied during bootstrap process.
   - (Optional) View the [init\_listing.tpl](init\_listing.tpl) see this process. You will see the `VAULT_TOKEN` environment variable being set in the systemd unit file: `/lib/systemd/system/listing.service`.
-  - Using the supplied token, Envconsul reads the MongoDB credential from the path: `mongo/creds/catalog`.
+  - Using the supplied token, envconsul reads the MongoDB credential from the path: `mongo/creds/catalog`.
 
 - Let's obtain a new set of credentials using the Vault CLI:
 ```
@@ -178,11 +182,11 @@ curl \
 --request PUT \
 ${VAULT_ADDR}/v1/sys/leases/revoke-force/mongo/creds
 ```
-Now refresh the web browser and the Listing service should stop working. Envconsul will restart this application upon next lease expiry time which is under 120s. At that time it will obtain new credentials and resume working.
+Now refresh the web browser and the Listing service should stop working. Envconsul will restart this application upon the next lease expiry time which is under 120s. At that time it will obtain new credentials and resume working.
 
 **But why is Product service still working??**
 
-#### Dynamic Credentials for Product service
+#### Dynamic Credentials for Product Service with Vault API
 - From a new terminal session, please issue: `terraform output product_api_servers`
 - `ssh -i <your_pem_file> ubuntu@<first_dns_returned>`
 - The product service uses [Vault hvac Python SDK](https://github.com/hvac/hvac) to authenticate with the Vault server. It obtains a Vault token, then reads the MongoDB credential from the path: `mongo/creds/catalog`.
@@ -199,4 +203,4 @@ except Exception as e:
 
 - For demo purposes the product service logs credentials as a debug log, this is not recommended for production application. You can view these by searching for it in the syslog: `grep "Vault response from AWS EC2 Auth" /var/log/syslog`
 
-We have now seen 2 patterns to for applications to consume Vault secrets: using a tool such as Envconsul and direct application integration.
+We have now seen 2 patterns to for applications to consume Vault secrets: using a tool such as envconsul and direct application integration.
