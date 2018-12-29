@@ -34,7 +34,7 @@ export AWS_ACCESS_KEY_ID="<your access key ID>"
 export AWS_SECRET_ACCESS_KEY="<your secret key>"
 export AWS_DEFAULT_REGION="us-east-1"
 ```
-    Replace `<your access key ID>` with your AWS Access Key ID and `<your secret key>` with your AWS Secret Access Key (see [Access Keys (Access Key ID and Secret Access Key)](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) for more help). *NOTE*: Currently, the Packer-built AMIs are only in `us-east-1`.
+Replace `<your access key ID>` with your AWS Access Key ID and `<your secret key>` with your AWS Secret Access Key (see [Access Keys (Access Key ID and Secret Access Key)](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) for more help). *NOTE*: Currently, the Packer-built AMIs are only in `us-east-1`.
 
 2. Please run: `git clone https://github.com/hashicorp/consul-guides.git`  
    _[PR only step: `cd consul-guides && git fetch && git checkout add-service-configuration && cd ..`]_
