@@ -184,7 +184,7 @@ ${VAULT_ADDR}/v1/sys/leases/revoke-force/mongo/creds
 ```
 Now refresh the web browser and the Listing service should stop working. Envconsul will restart this application upon the next lease expiry time which is under 120s. At that time it will obtain new credentials and resume working.
 
-**But why is Product service still working??**
+*But why is the Product service still working??*
 
 #### Dynamic Credentials for Product Service with Vault API
 - From a new terminal session, please issue: `terraform output product_api_servers`
