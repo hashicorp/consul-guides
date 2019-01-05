@@ -5,7 +5,11 @@ sudo chown -R ubuntu:ubuntu /home/ubuntu/
 pip3 install flask
 pip3 install pymongo
 
-# download the apply
-mkdir /home/ubuntu/src
-cd /home/ubuntu/src
-git clone https://github.com/thomashashi/simple-client.git
+# Create application directory and create a PID file:
+rm -rf /home/ubuntu/src && mkdir -p /home/ubuntu/src
+cd /tmp
+git clone https://github.com/hashicorp/consul-guides.git
+# PR only step:
+cd consul-guides && git fetch && git checkout add-service-configuration && cd ..
+cp -r /tmp/consul-guides/service-configuration/service-configuration-demo/application/simple-client /home/ubuntu/src
+chown -R ubuntu:ubuntu /home/ubuntu/src/simple-client

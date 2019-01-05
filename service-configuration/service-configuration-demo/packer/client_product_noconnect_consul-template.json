@@ -39,8 +39,8 @@
     "provisioners": [
       {
         "type": "file",
-        "source": "files/install_products.sh",
-        "destination": "/tmp/install_products.sh"
+        "source": "files/install_products_prereqs.sh",
+        "destination": "/tmp/install_products_prereqs.sh"
       },
       {
         "type": "file",
@@ -60,20 +60,18 @@
       {
         "type": "shell",
         "inline": [
-          "sudo chmod a+x /tmp/install_products.sh",
-          "sudo /tmp/install_products.sh",
-	  "sudo rm -f /tmp/install_products.sh",
+          "sudo chmod a+x /tmp/install_products_prereqs.sh",
+          "sudo /tmp/install_products_prereqs.sh",
+	  "sudo rm -f /tmp/install_products_prereqs.sh",
           "sudo mv /tmp/product.hcl /etc/consul/product.hcl",
 	  "sudo mv /tmp/product.service /lib/systemd/system/product.service",
           "sudo chown -R consul:consul /etc/consul",
           "sudo chown -R ubuntu:ubuntu /tmp",
           "sudo chmod a+x /tmp/install_client_tools.sh",
           "sudo /tmp/install_client_tools.sh",
-	  "sudo systemctl daemon-reload",
-	  "sudo systemctl enable product.service",
+	        "sudo systemctl daemon-reload",
           "sudo systemctl enable consul",
-          "sudo systemctl enable consul_enable_acl.service",
-	  "sudo rm -rf /opt/consul/*"
+	        "sudo rm -rf /opt/consul/*"
         ]
       }
     ]

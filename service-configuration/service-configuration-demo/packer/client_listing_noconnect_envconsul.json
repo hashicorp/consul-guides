@@ -71,9 +71,7 @@
           "sudo /tmp/install_client_tools.sh",
 	        "sudo systemctl daemon-reload",
           "sudo systemctl enable consul",
-          "sudo systemctl enable consul_enable_acl.service",
-	  "sudo systemctl enable listing.service",
-	  "sudo rm -rf /opt/consul/*"
+	        "sudo rm -rf /opt/consul/*"
         ]
       }
     ]

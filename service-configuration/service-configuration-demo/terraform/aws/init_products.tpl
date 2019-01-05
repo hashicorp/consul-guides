@@ -17,7 +17,6 @@ cp -r /tmp/consul-guides/service-configuration/service-configuration-demo/applic
 # Create application directory and create a PID file:
 cd /opt
 chown -R ubuntu:ubuntu /opt/product-service
-chmod a+x /opt/product-service/product_wrapper.sh
 touch /tmp/product-service.pid
 chown -R ubuntu:ubuntu /tmp
 

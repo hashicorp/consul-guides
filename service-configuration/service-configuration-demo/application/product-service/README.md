@@ -1,23 +1,32 @@
 # Product service
 
-This service returns a list of products retrieved from a JSON DB
+This service returns a set of products retrieved from a JSON DB. This application will be automatically deployed by the terraform code in this demo, please see the [README for running the demo](terraform/aws/README.md). The application can also be deployed as a standalone service for testing, these steps are provided below.
 
-## Instructions
+## Steps for standalone deployment
 
-##### Start a local mongo instance for testing (if necessary):
+### Start a local mongo instance for testing (if necessary):
 ```
 mkdir ~/product-data
-docker run -d -p 27017:27017 -v ~/product-data:/data/db --name mongodb mongo
+sudo docker run -d -p 27017:27017 -v ~/product-data:/data/db --name mongodb mongo
+```
+### Install pre-requisites and the listing application:
+```
+pip3 install flask
+pip3 install pymongo
+cd /tmp
+git clone https://github.com/hashicorp/consul-guides.git
+cd consul-guides && git fetch && git checkout add-service-configuration && cd ..
+sudo cp -r /tmp/consul-guides/service-configuration/service-configuration-demo/application/product-service /opt
+cd /opt/product-service
+sudo chown -R ubuntu:ubuntu /opt/product-service
 ```
 
-##### Python prep and flask server:
+### Run the application
 ```
-pip install flask
-pip install pymongo
+FLASK_APP=product.py flask run
 ```
 
-##### Run the server
+### Access the application
 ```
-DB_ADDR='localhost' DB_PORT=27018 FLASK_APP=product.py \
-DB_NAME=bbthe90s COL_NAME=products PRODUCT_PORT=1234 flask run
+curl localhost:5000/product
 ```

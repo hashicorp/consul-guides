@@ -13,7 +13,6 @@ cp -r /tmp/consul-guides/service-configuration/service-configuration-demo/applic
 
 # Create application directory and create a PID file:
 cd /opt
-chmod a+x /opt/listing-service/listing_wrapper.sh
 cd listing-service
 npm install
 npm install node-vault

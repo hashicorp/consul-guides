@@ -1,17 +1,16 @@
 # Deploy a Webclient server
 
 resource aws_instance "webclient" {
-    ami                         = "${data.aws_ami.webclient-noconnect.id}"
-    count			= "${var.client_webclient_count}"
+    ami = "${data.aws_ami.webclient-noconnect.id}"
+    count	= "${var.client_webclient_count}"
     instance_type		= "${var.client_machine_type}"
     key_name			= "${var.ssh_key_name}"
-    subnet_id			= "${element(data.aws_subnet_ids.default.ids, count.index)}" 
+    subnet_id			= "${element(data.aws_subnet_ids.default.ids, count.index)}"
     associate_public_ip_address = true
     vpc_security_group_ids      = ["${aws_security_group.webclient_sg.id}"]
     iam_instance_profile        = "${aws_iam_instance_profile.consul_client_iam_profile.name}"
-    
+
     tags = "${merge(var.hashi_tags, map("Name", "${var.project_name}-webclient-server-${count.index}"), map("role", "webclient-server"), map("consul-cluster-name", replace("consul-cluster-${var.project_name}-${var.hashi_tags["owner"]}", " ", "")))}"
-    user_data = "${file("${path.module}/init_web_client.tpl")}"
 }
 
 output "webclient_servers" {

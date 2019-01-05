@@ -54,6 +54,6 @@ data "aws_ami" "webclient-noconnect" {
 
     filter {
         name   = "name"
-        values = ["*-aws-ubuntu-webclient-noconnect-*"]
+        values = ["*-webclient-configdemo-noconnect-*"]
     }
 }

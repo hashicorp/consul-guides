@@ -24,7 +24,7 @@
         },
         "instance_type": "t2.micro",
         "ssh_username": "ubuntu",
-        "ami_name": "{{ user `dc_name` }}-aws-ubuntu-webclient-noconnect-{{timestamp}}",
+        "ami_name": "{{ user `dc_name` }}-webclient-configdemo-noconnect-{{timestamp}}",
         "tags": {
             "Name": "CC Demo Ubuntu Webclient - No Consul Connect",
             "owner": "thomas@hashicorp.com",
@@ -57,15 +57,13 @@
         "inline": [
           "sudo chmod a+x /tmp/install_webclient.sh",
           "sudo /tmp/install_webclient.sh",
-	  "sudo rm -f /tmp/install_webclient.sh",
           "sudo mv /tmp/web_client.hcl /etc/consul/web_client.hcl",
-	  "sudo mv /tmp/web_client.service /lib/systemd/system/web_client.service",
+	        "sudo mv /tmp/web_client.service /lib/systemd/system/web_client.service",
           "sudo chown -R consul:consul /etc/consul",
-	  "sudo systemctl daemon-reload",
+	        "sudo systemctl daemon-reload",
           "sudo systemctl enable consul",
-          "sudo systemctl enable consul_enable_acl.service",
-	  "sudo systemctl enable web_client.service",
-	  "sudo rm -rf /opt/consul/*"
+          "sudo systemctl enable web_client.service",
+	        "sudo rm -rf /opt/consul/*"
         ]
       }
     ]
