@@ -1,0 +1,13 @@
+packer.sh
+*~
+*.DS_Store
+packer/binaries/*
+packer/files/encrypt.hcl
+packer/.built*
+env.sh
+terraform/gcp/terraform.tf*
+
+# Include binaries folder
+!packer/binaries/.gitkeep
+terraform/gcp/.terraform
+

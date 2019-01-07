@@ -1,0 +1,13 @@
+[Unit]
+Description=product.py - Product service API
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Environment=VAULT_ADDR=http://active.vault.service.consul:8200
+Type=simple
+User=ubuntu
+ExecStart=/usr/local/bin/consul-template -config /opt/product-service/product_consul_template.hcl
+Restart=always

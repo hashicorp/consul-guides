@@ -1,0 +1,10 @@
+product:
+    version: 1.0
+    DB_ADDR: localhost
+    DB_PORT: 27017
+    DB_NAME: bbthe90s
+    COL_NAME: products
+    PRODUCT_PORT: 5000
+    PRODUCT_ADDR: 0.0.0.0
+    AWS_EC2_ROLE: dev-role
+    VAULT_SECRET_PATH: mongo/creds/catalog

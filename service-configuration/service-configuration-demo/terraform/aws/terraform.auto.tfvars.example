@@ -1,0 +1,22 @@
+# Rename this to `terraform.auto.tfvars` and edit.
+# You should set all of the variables.
+# In particular, 'project_name' and 'hashi_tags["owner"]'
+# combined set the Consul 'cluster name' which the cloud
+# auto-join uses --- if you want to run more than one instance
+# of this in a single AWS account, you'll need to make these
+# distinct to keep the instances separate.
+
+project_name    = "kawsar-configuration-demo"
+hashi_tags      = { "TTL" = "48", owner = "kawsar@hashicorp.com", "project" = "Service Configuration demo" }
+
+# Packer images currently exist in "us-east-1" and "us-west-1"
+aws_region      = "us-east-1"
+
+# This is the name of an already existing SSH Keypair in AWS in the above AWS region
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+ssh_key_name    = "your-aws-ssh-key-pair"
+
+# (Optional) Add your IP external address here so you can access the Vault and Consul UI:
+# 1.1.1.1 is just an example IP (it happens to be Cloudflare DNS)
+# You can use the command `curl -s http://whatismyip.akamai.com` to find your IP address.
+security_group_ingress = ["1.1.1.1/32"]

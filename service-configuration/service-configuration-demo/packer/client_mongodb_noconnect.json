@@ -1,0 +1,69 @@
+{
+    "variables": {
+        "aws_access_key": "{{ env `AWS_ACCESS_KEY` }}",
+        "aws_secret_key": "{{ env `AWS_SECRET_KEY` }}",
+        "aws_region": "{{ env `AWS_REGION` }}",
+        "dc_name": "{{ env `DC_NAME` }}",
+        "role": "consul-client-listing",
+        "type": "{{ env `NODE_TYPE` }}"
+    },
+    "builders": [
+      { 
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "{{user `aws_region`}}",
+        "source_ami_filter": {
+            "filters": {
+                "virtualization-type": "hvm",
+                "name": "{{ user `dc_name` }}-aws-ubuntu-consul-client-*",
+                "root-device-type": "ebs"
+            },
+            "owners": ["753646501470"],
+            "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "{{ user `dc_name` }}-aws-ubuntu-mongodb-noconnect-{{timestamp}}",
+        "tags": {
+            "Name": "CC Demo Ubuntu MongoDB Server - Without Consul Connect",
+            "owner": "thomas@hashicorp.com",
+            "project": "CC Demo SE East Quarterly Training",
+            "Base_AMI_Name": "{{ .SourceAMIName }}",
+            "Base_AMI": "{{ .SourceAMI }}",
+            "role": "{{ user `role` }}"
+        },
+	"ami_groups": ["all"]
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "files/install_mongodb.sh",
+        "destination": "/tmp/install_mongodb.sh"
+      },
+      {
+        "type": "file",
+        "source": "services/mongodb-noconnect.hcl",
+        "destination": "/tmp/mongodb.hcl"
+      },
+      {
+	  "type": "file",
+	  "source": "files/mongod.conf-noconnect",
+	  "destination": "/tmp/mongod.conf"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "sudo chmod a+x /tmp/install_mongodb.sh",
+          "sudo /tmp/install_mongodb.sh",
+          "sudo mv /tmp/mongodb.hcl /etc/consul/",
+	  "sudo mv /tmp/mongod.conf /etc/mongod.conf",
+          "sudo chown -R consul:consul /etc/consul",
+          "sudo systemctl enable consul",
+          "sudo systemctl enable consul_enable_acl.service",
+	  "sudo rm -rf /opt/consul/*"
+        ]
+      }
+    ]
+  }

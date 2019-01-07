@@ -1,0 +1,20 @@
+{
+  "name": "listing",
+  "version": "0.0.1",
+  "description": "API to manage listings",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.0-beta4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}

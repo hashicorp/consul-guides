@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Thomas Kula <thomas@hashicorp.com>
+# 2018.08.07
+
+KEY=consul-cluster-name
+TMPL=/etc/consul/auto-join.hcl.tmpl
+OUT=/etc/consul/auto-join.hcl
+
+# Inspired by https://gist.github.com/codeinthehole/ab9a8dc30917c5705846
+
+INSTANCE_ID=$(ec2metadata --instance-id)
+REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}')
+TAG_VALUE=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=$KEY" --region=$REGION | jq -r '.Tags[0].Value')
+
+sed "s/@@CONSUL_CLUSTER_NAME@@/$TAG_VALUE/" $TMPL > $OUT

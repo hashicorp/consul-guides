@@ -1,0 +1,13 @@
+[Unit]
+Description=server.js - Listing service API
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Environment=VAULT_ADDR=http://active.vault.service.consul:8200
+Type=simple
+User=ubuntu
+ExecStart=/usr/local/bin/envconsul -config /opt/listing-service/listing_envconsul.hcl
+Restart=always
