@@ -37,7 +37,6 @@ export AWS_DEFAULT_REGION="us-east-1"
 Replace `<your access key ID>` with your AWS Access Key ID and `<your secret key>` with your AWS Secret Access Key (see [Access Keys (Access Key ID and Secret Access Key)](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) for more help). *NOTE*: Currently, the pre-built Packer AMIs are in `us-east-1` and `us-west-1` region.
 
 2. Please run: `git clone https://github.com/hashicorp/consul-guides.git`  
-   _[PR only step: `cd consul-guides && git fetch && git checkout add-service-configuration && cd ..`]_
 3. `cd consul-guides/service-configuration/service-configuration-demo/terraform/aws/`
 4. `cp terraform.auto.tfvars.example terraform.auto.tfvars`
 5. Edit the `terraform.auto.tfvars` file:

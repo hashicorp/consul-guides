@@ -9,7 +9,5 @@ pip3 install pymongo
 rm -rf /home/ubuntu/src && mkdir -p /home/ubuntu/src
 cd /tmp
 git clone https://github.com/hashicorp/consul-guides.git
-# PR only step:
-cd consul-guides && git fetch && git checkout add-service-configuration && cd ..
 cp -r /tmp/consul-guides/service-configuration/service-configuration-demo/application/simple-client /home/ubuntu/src
 chown -R ubuntu:ubuntu /home/ubuntu/src/simple-client
