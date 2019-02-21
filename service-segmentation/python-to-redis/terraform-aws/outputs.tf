@@ -1,7 +1,3 @@
-output "ubuntu_image_id" {
-    value = "${data.aws_ami.ubuntu.id}"
-}
-
 output "node_1_public_dns" {
     value = "${aws_instance.consul-n1-clientms.public_dns}"
 }

@@ -5,8 +5,8 @@
   "node_name": "n1",
   "server": true,
   "bootstrap_expect": 1,
-  "enable_script_checks": true,
-  "bind_addr": "172.16.20.10",
+  "enable_script_checks": false,
+  "bind_addr": "172.20.20.10",
   "client_addr": "0.0.0.0",
   "connect": {
     "enabled": true

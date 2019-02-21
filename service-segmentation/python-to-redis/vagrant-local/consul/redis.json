@@ -9,6 +9,6 @@
       "interval": "10s",
       "timeout": "1s"
     },
-    "connect": { "proxy": {} }
+    "connect": { "sidecar_service": {} }
   }
 }
