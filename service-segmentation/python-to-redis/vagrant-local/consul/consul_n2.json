@@ -4,7 +4,7 @@
   "log_level": "DEBUG",
   "node_name": "n2",
   "server": false,
-  "enable_script_checks": true,
+  "enable_script_checks": false,
   "bind_addr": "172.20.20.11",
   "client_addr": "0.0.0.0",
   "retry_join": ["172.20.20.10"]

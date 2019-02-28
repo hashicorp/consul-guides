@@ -7,7 +7,7 @@ provider "aws" {
 
 # VPC
 resource "aws_vpc" "cc-demo-vpc" {
-  cidr_block           = "172.16.20.0/24"
+  cidr_block           = "172.20.20.0/24"
   instance_tenancy     = "default"
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
@@ -22,7 +22,7 @@ resource "aws_vpc" "cc-demo-vpc" {
 # Public Subnet
 resource "aws_subnet" "cc-demo-public-1" {
   vpc_id                  = "${aws_vpc.cc-demo-vpc.id}"
-  cidr_block              = "172.16.20.0/25"
+  cidr_block              = "172.20.20.0/25"
   map_public_ip_on_launch = "true"
   availability_zone       = "${var.aws_region}a"
 
@@ -109,20 +109,6 @@ resource "aws_security_group_rule" "ingress_allow_consul_interface" {
   security_group_id = "${aws_security_group.cc-demo-sg.id}"
 }
 
-# Obtain AMI ID
-data "aws_ami" "ubuntu" {
-    most_recent = true
-    filter {
-        name   = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
-    }
-    filter {
-        name   = "virtualization-type"
-        values = ["hvm"]
-    }
-    owners = ["099720109477"] # Canonical
-}
-
 # Create a new RSA key pair for ssh
 resource "tls_private_key" "ssh_key_pair" {
   algorithm   = "RSA"
@@ -131,19 +117,19 @@ resource "tls_private_key" "ssh_key_pair" {
 
 # Create a AWS key pair
 resource "aws_key_pair" "cc-demokeypair" {
-  key_name   = "cc-demokeypair"
+  key_name   = "${var.owner}-cc-demokeypair"
   public_key = "${tls_private_key.ssh_key_pair.public_key_openssh}"
 }
 
 # consul_n1
 resource "aws_instance" "consul-n1-clientms" {
-  ami           = "${data.aws_ami.ubuntu.id}"
+  ami           = "${var.ami_id}"
   instance_type = "${var.instance_size}"
   availability_zone = "${var.aws_region}a"
   key_name = "${aws_key_pair.cc-demokeypair.key_name}"
   vpc_security_group_ids = ["${aws_security_group.cc-demo-sg.id}"]
   subnet_id = "${aws_subnet.cc-demo-public-1.id}"
-  private_ip = "172.16.20.10"
+  private_ip = "172.20.20.10"
 
   tags {
     Name = "consul-n1-clientms"
@@ -166,30 +152,31 @@ resource "aws_instance" "consul-n1-clientms" {
   }
 
   # Remote exec provisioner
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/setup/consul_n1_setup.sh",
-      "cd /tmp/setup && sudo ./consul_n1_setup.sh",
-    ]
+   provisioner "remote-exec" {
+     inline = [
+       "chmod +x /tmp/setup/consul_n1_setup.sh",
+       "cd /tmp/setup && sudo ./consul_n1_setup.sh",
+     ]
 
-    connection {
-      type     = "ssh"
-      user     = "ubuntu"
-      host     = "${self.public_dns}"
-      private_key = "${tls_private_key.ssh_key_pair.private_key_pem}"
-    }
-  }
+     connection {
+       type     = "ssh"
+       user     = "ubuntu"
+       host     = "${self.public_dns}"
+       private_key = "${tls_private_key.ssh_key_pair.private_key_pem}"
+     }
+   }
+
 }
 
 # consul_n2
 resource "aws_instance" "consul-n2-redis-server" {
-  ami           = "${data.aws_ami.ubuntu.id}"
+  ami           = "${var.ami_id}"
   instance_type = "${var.instance_size}"
   availability_zone = "${var.aws_region}a"
   key_name = "${aws_key_pair.cc-demokeypair.key_name}"
   vpc_security_group_ids = ["${aws_security_group.cc-demo-sg.id}"]
   subnet_id = "${aws_subnet.cc-demo-public-1.id}"
-  private_ip = "172.16.20.11"
+  private_ip = "172.20.20.11"
 
   tags {
     Name = "consul-n2-redis-server"
@@ -212,17 +199,17 @@ resource "aws_instance" "consul-n2-redis-server" {
   }
 
   # Remote exec provisioner
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/setup/consul_n2_setup.sh",
-      "cd /tmp/setup && sudo ./consul_n2_setup.sh",
-    ]
+   provisioner "remote-exec" {
+      inline = [
+       "chmod +x /tmp/setup/consul_n2_setup.sh",
+       "cd /tmp/setup && sudo ./consul_n2_setup.sh",
+     ]
 
-    connection {
-      type     = "ssh"
-      user     = "ubuntu"
-      host     = "${self.public_dns}"
-      private_key = "${tls_private_key.ssh_key_pair.private_key_pem}"
-    }
-  }
+     connection {
+       type     = "ssh"
+       user     = "ubuntu"
+       host     = "${self.public_dns}"
+       private_key = "${tls_private_key.ssh_key_pair.private_key_pem}"
+     }
+   }
 }

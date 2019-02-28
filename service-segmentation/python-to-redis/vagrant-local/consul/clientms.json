@@ -10,11 +10,11 @@
       "timeout": "1s"
     },
     "connect": {
-      "proxy": {
-        "config": {
-          "upstreams": [{
-            "destination_name": "redis",
-            "local_bind_port": 6400
+      "sidecar_service": {
+        "proxy": {
+           "upstreams": [{
+             "destination_name": "redis",
+             "local_bind_port": 6400
           }]
         }
       }

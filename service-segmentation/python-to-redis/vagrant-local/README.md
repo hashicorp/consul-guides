@@ -35,6 +35,7 @@ The `Vagrantfile` has setup a non-HA Consul cluster using the 2 Vagrant VMs. Bot
 
 - SSH into n1 from terminal: `vagrant ssh n1`.  
 - Verify that the consul cluster has 2 members: `consul members`
+- View running services from consul catalog: `consul catalog services`. You should see both clientms and redis service and their accompanying sidecar proxy.
 - Query the Consul API to review microservice definitions:   
 ```
 curl localhost:8500/v1/catalog/service/clientms

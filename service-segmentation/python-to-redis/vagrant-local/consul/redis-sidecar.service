@@ -1,0 +1,14 @@
+[Unit]
+Description=consul sidecar
+Requires=consul.service
+After=consul.service
+[Service]
+Restart=always
+RestartSec=15s
+User=vagrant
+Group=vagrant
+ExecStart=/usr/bin/consul connect proxy -sidecar-for redis
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+[Install]
+WantedBy=multi-user.target
