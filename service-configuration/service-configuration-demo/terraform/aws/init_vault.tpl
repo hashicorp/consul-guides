@@ -25,20 +25,26 @@ EOF
 sleep 10
 systemctl daemon-reload
 systemctl start vault
-
-# Delay vault initialization
-sleep 10
+sleep 5
 
 # check if consul servers are up (pending), if so delay initialization:
-echo "Consul server 0: ${consul_server_ip0}"
-consul_is_up=$(consul members | grep alive.*server)
-if [ -z "$consul_is_up" ]
-then
-      echo "Consul is not up ... sleeping 10 secs"
-      sleep 10
-else
-      echo "Consul is up, proceeding with Initialization"
-fi
+try=0
+max=12
+vault_consul_is_up=$(consul catalog services | grep vault)
+while [ -z "$vault_consul_is_up" ]
+do
+  touch "/tmp/vault-try-$try"
+  if [[ "$try" == '12' ]]; then
+    echo "Giving up on consul catalog services after 12 attempts."
+    break
+  fi
+  ((try++))
+  echo "Vault or Consul is not up, sleeping 10 secs [$try/$max]"
+  sleep 10
+  vault_consul_is_up=$(consul catalog services | grep vault)
+done
+
+echo "Vault and Consul is up, proceeding with Initialization"
 
 # Initialize and unseal:
 export VAULT_ADDR="http://localhost:8200"
@@ -53,7 +59,7 @@ echo "export VAULT_TOKEN=\"$(cat /tmp/${vault_path}_root_token)\"" >> /etc/profi
 
 sleep 10
 vault operator unseal $(cat /tmp/${vault_path}_unseal_key)
-consul kv delete vault_metadata/root_token $VAULT_TOKEN
+consul kv delete vault_metadata/root_token
 consul kv put vault_metadata/root_token $VAULT_TOKEN
 
 # Import the Catalog policy
