@@ -12,7 +12,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
-    "mongodb": "^3.1.0-beta4"
+    "mongodb": "^3.1.13"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"
