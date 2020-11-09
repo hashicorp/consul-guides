@@ -25,7 +25,7 @@ sanitize = false
 # This specifies a prefix in Consul to watch. This may be specified multiple
 prefix {
   # This tells Envconsul to not prefix the keys with their parent "folder".
-  no_prefix = false
+  no_prefix = true
 
   # This is the path of the key in Consul or Vault from which to read data.
   path = "listing/config"
