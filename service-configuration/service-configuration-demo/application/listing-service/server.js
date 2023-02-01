@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) HashiCorp, Inc.
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 const express     = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser  = require('body-parser')

@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 import logging.handlers
 from flask import Flask
 from flask import jsonify

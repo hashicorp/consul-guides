@@ -1,4 +1,7 @@
 #! /bin/bash
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 
 sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade > /dev/null

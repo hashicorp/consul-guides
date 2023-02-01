@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 #Redis server settings:
 redis_host: localhost
 redis_port: 6379

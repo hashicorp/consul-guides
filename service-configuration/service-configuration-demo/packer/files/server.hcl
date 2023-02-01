@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 bootstrap_expect   = 3
 client_addr        = "0.0.0.0"
 data_dir           = "/opt/consul"

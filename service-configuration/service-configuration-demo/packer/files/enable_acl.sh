@@ -1,4 +1,7 @@
 #! /bin/bash
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 
 echo "Giving consul cluster time to stabilize..."
 sleep 30

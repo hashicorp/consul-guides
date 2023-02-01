@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 output "node_1_public_dns" {
     value = "${aws_instance.consul-n1-clientms.public_dns}"
 }

@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 exec {
   # This is the command to execute as a child process. There can be only one
   # command per process.
