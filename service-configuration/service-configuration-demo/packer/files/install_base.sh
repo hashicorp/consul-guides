@@ -1,4 +1,7 @@
 #! /bin/bash
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 
 echo "Updating and installing required software..."
 sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq > /dev/null

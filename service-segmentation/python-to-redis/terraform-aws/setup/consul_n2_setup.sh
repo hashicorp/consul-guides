@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 export CONSUL_DEMO_VERSION=1.4.2
 
 #Install Consul and dependencies

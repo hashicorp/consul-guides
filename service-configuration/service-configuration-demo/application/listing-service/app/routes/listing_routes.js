@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) HashiCorp, Inc.
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 module.exports = function(app, db, conf) {
 
   app.get('/listing/healthz', (req, res) => {

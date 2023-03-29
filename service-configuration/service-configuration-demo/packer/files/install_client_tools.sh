@@ -1,4 +1,7 @@
 #! /bin/bash
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 
 # Install envconsul on Linux:
 export envconsul_version=0.7.3

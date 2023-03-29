@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # Deploy a Consul Cluster
 
 resource aws_instance "consul" {

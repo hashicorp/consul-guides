@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 
 # Note: please export AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, or AWS_ACCESS_KEY and AWS_SECRET_KEY prior to executing this script. Please do not place your credentials in this file
 
