@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       thisnode.vm.hostname = "#{nodename}"
-      thisnode.vm.network :private_network, :auto_network => true
+      thisnode.vm.network :private_network, :type => :dhcp, :auto_network => true
       thisnode.vm.provision :hosts, :autoconfigure => true, :sync_hosts => true
 
       if "#{nodename}".include? "consula0" then
