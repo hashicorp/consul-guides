@@ -1,0 +1,43 @@
+{
+    "variables": {
+        "gcp_account_file": "{{ env `GCP_ACCOUNT_FILE_JSON`}}",
+        "gcp_project_id": "{{ env `GCP_PROJECT_ID` }}",
+        "gcp_zone": "{{ env `GCP_ZONE` }}",
+        "dc_name": "{{ env `DC_NAME` }}",
+        "tag_name": "consul-server",
+        "type": "{{ env `NODE_TYPE` }}"
+    },
+    "builders": [
+      {
+        "image_name": "{{ user `dc_name` }}-gcp-ubuntu-consul-{{ user `type` }}",
+        "type": "googlecompute",
+        "account_file": "{{ user `gcp_account_file` }}",
+        "project_id": "{{ user `gcp_project_id` }}",
+        "source_image_family": "ubuntu-1710",
+        "ssh_username": "ubuntu",
+        "machine_type": "n1-standard-1",
+        "zone" : "{{ user `gcp_zone` }}",
+        "tags": ["{{ user `tag_name` }}"]
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "files/install_{{ user `type` }}.sh",
+        "destination": "/tmp/install_{{ user `type` }}.sh"
+      },
+      {
+        "type": "file",
+        "source": "binaries/consul.zip",
+        "destination": "/tmp/consul.zip" 
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "sleep 15",
+          "sudo chmod a+x /tmp/install_{{ user `type` }}.sh",
+          "sudo /tmp/install_{{ user `type` }}.sh {{ user `dc_name` }} {{ user `gcp_project_id` }} {{ user `tag_name` }}"
+        ]
+      }
+    ]
+  }
